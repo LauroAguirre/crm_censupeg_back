@@ -1,0 +1,55 @@
+{
+  "name": "crm_censupeg_back",
+  "version": "1.0.0",
+  "description": "APi backend para o CRM da Censupeg",
+  "main": "server.ts",
+  "repository": "https://github.com/LauroAguirre/crm_censupeg_back.git",
+  "author": "Censupeg",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "rimraf ./build && tsc && yarn copyviews",
+    "commit": "cz&git push",
+    "copyviews": "copyfiles  -u 2 src/views/*.ejs build/views",
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules  src/server.ts",
+    "start:dev": "nodemon",
+    "start:prod": "yarn build:prod && npx --exec ts-node --files build/server.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^3.10.0",
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "commitizen": "^4.2.4",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dayjs": "^1.10.7",
+    "dotenv": "^14.3.0",
+    "express": "^4.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "prisma": "^3.8.1",
+    "request-ip": "^2.1.3",
+    "typescript": "^4.5.5"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^17.0.12",
+    "@types/request-ip": "^0.0.37",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.7.0",
+    "eslint-config-import": "^0.13.0",
+    "eslint-config-node": "^4.1.0",
+    "eslint-config-promise": "^2.0.2",
+    "eslint-config-standard": "^16.0.3",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0",
+    "ts-node-dev": "^1.1.8",
+    "tsconfig-paths": "^3.12.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

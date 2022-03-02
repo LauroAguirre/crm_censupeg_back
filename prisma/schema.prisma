@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuarios {
+  id            String        @id @default(uuid())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  nome          String        @db.VarChar(80)
+  telefone      String?
+  email         String        @db.VarChar(120)
+  senha         String        @db.VarChar(80)
+  perfilUsuario Int
+  ativo         Boolean       @default(true)
+  RefreshKeys   RefreshKeys[]
+}
+
+model RefreshKeys {
+  id            String   @id @default(uuid())
+  dataExpiracao DateTime
+  tokenAtual    String
+  usuario       Usuarios @relation(fields: [idUsuario], references: [id])
+  idUsuario     String
+  ipOrigem      String?
+}
+
+// model User {
+//   id      Int      @id @default(autoincrement())
+//   email   String   @unique
+//   name    String?
+//   posts   Post[]
+//   profile Profile?
+// }
