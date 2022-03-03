@@ -5,6 +5,7 @@ import CriarRefreshTk from '../providers/criarRefreshTk'
 
 import dayjs from 'dayjs'
 import { PrismaClient } from '@prisma/client'
+import { JWTHeader } from 'src/providers/JWTHeader'
 
 const prisma = new PrismaClient()
 
@@ -18,7 +19,7 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
     if (authHeader) {
       const [, token] = authHeader.split(' ')
 
-      verify(token, process.env.JWT_TOKEN, async (error, headerToken) => {
+      verify(token, process.env.JWT_TOKEN, async (error, headerToken:JWTHeader) => {
         if (error) {
           console.log(headerToken)
           console.log('JWT inválido!')
@@ -28,24 +29,24 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
 
         console.log(headerToken)
 
-        // const idUsuario = headerToken.userId.toString()
+        const idUsuario = headerToken.userId.toString()
 
-        // const userTk = await prisma.refreshKeys.findFirst({ where: {idUsuario, ipOrigem}})
-        // const now = new Date()
+        const userTk = await prisma.refreshKeys.findFirst({ where: {idUsuario, ipOrigem}})
+        const now = new Date()
 
-        // if (!userTk) console.log('Não tem o cookie')
+        if (!userTk) console.log('Não tem o cookie')
 
-        // if (!userTk) {
-        //   await CriarRefreshTk.createRefresh(idUsuario, token, ipOrigem)
-        // } else {
-        //   if (userTk.tokenAtual !== token || dayjs(userTk.dataExpiracao).isBefore(dayjs(now))) {
-        //     console.log('Autenticação expirada.')
-        //     console.log(`Data expiração: ${userTk?.dataExpiracao}`)
-        //     console.log(`Token Header: ${token}`)
-        //     console.log(`Token DB: ${userTk?.tokenAtual}`)
-        //     return res.status(401).send({ message: 'Erro de autenticação' })
-        //   }
-        // }
+        if (!userTk) {
+          await CriarRefreshTk.createRefresh(idUsuario, token, ipOrigem)
+        } else {
+          if (userTk.tokenAtual !== token || dayjs(userTk.dataExpiracao).isBefore(dayjs(now))) {
+            console.log('Autenticação expirada.')
+            console.log(`Data expiração: ${userTk?.dataExpiracao}`)
+            console.log(`Token Header: ${token}`)
+            console.log(`Token DB: ${userTk?.tokenAtual}`)
+            return res.status(401).send({ message: 'Erro de autenticação' })
+          }
+        }
 
         next()
       })

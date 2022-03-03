@@ -6,6 +6,7 @@ import authMiddleware from 'src/middleware/authMiddleware'
 const router = Router()
 
 router.get('/usuarios/:idUsuario', usuariosController.buscarUsuario)
+router.get('/usuarios/logado', usuariosController.getUsuarioLogado)
 
 router.post('/usuarios/novo', usuariosController.novoUsuario)
 
