@@ -6,7 +6,8 @@ import cookieParser from 'cookie-parser'
 // import './database/connect'
 import routes from './routes/defaultRoutes'
 import auth from './routes/authRoutes'
-import usuario from './routes/usuariosRoutes'
+import usuarios from './routes/usuariosRoutes'
+import unidades from './routes/unidadesRoutes'
 // import usr from './routes/usrRoutes'
 // import careUnit from './routes/careUnitRoutes'
 // import doctor from './routes/doctorRoutes'
@@ -76,7 +77,8 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(routes)
 app.use(auth)
-app.use(usuario)
+app.use(usuarios)
+app.use(unidades)
 
 const server = http.createServer(app)
 

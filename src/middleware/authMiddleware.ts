@@ -11,8 +11,10 @@ const prisma = new PrismaClient()
 
 export default function authMiddleware (req: Request, res: Response, next: NextFunction) {
   try {
-    console.log('Rodando o middleware')
-    console.log(req.headers)
+    // console.log('------------------------------------------------------------')
+    // console.log('Rodando o middleware')
+    // console.log(req)
+    // console.log('------------------------------------------------------------')
     const authHeader = req.headers.authorization
     const ipOrigem = requestIp.getClientIp(req)
 
@@ -46,6 +48,18 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
             console.log(`Token DB: ${userTk?.tokenAtual}`)
             return res.status(401).send({ message: 'Erro de autenticação' })
           }
+        }
+
+        const usuario = await prisma.usuarios.findFirst({ where: {id: idUsuario}})
+        console.log(usuario)
+
+        if(usuario.perfilUsuario !== 2 ){
+          const rotasGestor = [
+            '/unidades/novo',
+            '/unidades/:idUnidade/vincularUsuario'
+          ]
+
+          if(rotasGestor.findIndex(rota => rota === req.route.path) > -1) return res.status(401).send('Perfil não autorizado')
         }
 
         next()

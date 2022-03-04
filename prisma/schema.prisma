@@ -18,6 +18,8 @@ model Usuarios {
   perfilUsuario Int
   ativo         Boolean       @default(true)
   RefreshKeys   RefreshKeys[]
+  Unidades      Unidades?     @relation(fields: [unidadesId], references: [id])
+  unidadesId    Int?
 }
 
 model RefreshKeys {
@@ -29,10 +31,15 @@ model RefreshKeys {
   ipOrigem      String?
 }
 
-// model User {
-//   id      Int      @id @default(autoincrement())
-//   email   String   @unique
-//   name    String?
-//   posts   Post[]
-//   profile Profile?
-// }
+model Unidades {
+  id          Int        @id @default(autoincrement())
+  nome        String     @unique
+  cep         Int
+  logradouro  String
+  numero      String
+  complemento String
+  bairro      String
+  cidade      String
+  uf          String
+  usuarios    Usuarios[]
+}
