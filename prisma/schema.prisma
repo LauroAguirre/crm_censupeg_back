@@ -34,7 +34,7 @@ model RefreshKeys {
 model Unidades {
   id          Int        @id @default(autoincrement())
   nome        String     @unique
-  cep         Int
+  cep         String
   logradouro  String
   numero      String
   complemento String

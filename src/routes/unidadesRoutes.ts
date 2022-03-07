@@ -6,9 +6,10 @@ const router = Router()
 
 router.get('/unidades/:idUnidade', authMiddleware, unidadesController.buscarUnidade)
 
+router.put('/unidades/:idUnidade/vincularUsuario', authMiddleware, unidadesController.vincularUsuario)
+router.put('/unidades/:idUnidade/removerUsuario', authMiddleware, unidadesController.removerUsuario)
 
 router.post('/unidades/novo', authMiddleware, unidadesController.novaUnidade)
-router.post('/unidades/:idUnidade/vincularUsuario', authMiddleware, unidadesController.vincularUsuario)
 
 
 export default router

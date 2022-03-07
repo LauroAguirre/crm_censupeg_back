@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Unidades" ALTER COLUMN "cep" SET DATA TYPE TEXT;
