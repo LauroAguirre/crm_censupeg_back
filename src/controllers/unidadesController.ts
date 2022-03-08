@@ -40,7 +40,16 @@ class UsuariosController {
 
   async pesquisarUnidades (req: Request, res: Response) {
     try {
-      const { nome, cep, cidade, uf } = req.query
+      const { nome, cep, cidade, uf, pag } = req.query
+      const porPagina = 10
+
+      const completo = await prisma.unidades.findMany({
+        where:{
+          nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
+          cep: cep ? {equals: cep.toString().replace(/\D/g, '')} : undefined,
+          cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
+          uf: uf ? {equals: uf.toString(), mode: 'insensitive'} : undefined
+        }})
 
       const unidades = await prisma.unidades.findMany({
         where:{
@@ -49,6 +58,8 @@ class UsuariosController {
           cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
           uf: uf ? {equals: uf.toString(), mode: 'insensitive'} : undefined
         },
+        take: porPagina,
+        skip: ( Number(pag) - 1)*porPagina,
         orderBy: [
           {
             nome: 'asc',
@@ -62,7 +73,7 @@ class UsuariosController {
         ],
       })
 
-      return res.status(200).json({ usuario: unidades })
+      return res.status(200).json({ unidades, total: completo.length, paginas: Math.ceil(completo.length/porPagina) })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
