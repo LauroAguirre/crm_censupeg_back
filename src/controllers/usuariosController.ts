@@ -8,14 +8,10 @@ const prisma = new PrismaClient()
 
 class UsuariosController {
   async novoUsuario (req: Request, res: Response) {
-    console.log('Cadastrando novo usuário...')
     try {
       const { nome, telefone, email, senha, perfilUsuario, ativo } = req.body
 
       const usuario = await prisma.usuarios.create({ data:{ nome, telefone, email, senha: bcrypt.hashSync(senha, 8), perfilUsuario, ativo }})
-      console.log('Usuário:')
-      console.log(usuario)
-      console.log('----------------------')
 
       return res.status(200).json({ usuario })
     } catch (error) {
@@ -31,19 +27,11 @@ class UsuariosController {
 
       verify(token, process.env.JWT_TOKEN, async (error, headerToken:JWTHeader) => {
         if (error) {
-          console.log(headerToken)
-          console.log('JWT inválido!')
-          console.log(error)
           return res.status(401).send({ message: 'Usuário não encontrado' })
         }
 
-        console.log(headerToken)
-
         const idUsuario = headerToken.userId.toString()
         const usuario = await prisma.usuarios.findFirst({ where:{ id: idUsuario }})
-        console.log('Usuário:')
-        console.log(usuario)
-        console.log('----------------------')
 
         return res.status(200).json({ usuario })
       })
@@ -60,11 +48,57 @@ class UsuariosController {
       const { idUsuario } = req.params
 
       const usuario = await prisma.usuarios.findFirst({ where:{ id: idUsuario }})
-      console.log('Usuário:')
-      console.log(usuario)
-      console.log('----------------------')
 
       return res.status(200).json({ usuario })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
+  async getUsuariosUnidade (req: Request, res: Response) {
+    try {
+      const { idUnidade } = req.query
+
+      const usuarios = await prisma.usuarios.findFirst({ where:{ unidadesId: Number(idUnidade) }})
+
+      return res.status(200).json({ usuarios })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
+  async pesquisarUsuários (req: Request, res: Response) {
+    try {
+      const { pagina, unidade, nome, email, ativo} = req.query
+      const porPagina = 10
+
+      const completo = await prisma.usuarios.findMany({
+        where:{
+          nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
+          unidadesId: unidade ? {equals: Number(unidade)} : undefined,
+          email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
+          ativo: ativo ? Boolean(ativo) : undefined
+        }})
+
+      const usuarios = await prisma.usuarios.findMany({
+        where:{
+          nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
+          unidadesId: unidade ? {equals: Number(unidade)} : undefined,
+          email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
+          ativo: ativo ? Boolean(ativo) : undefined
+        },
+        take: porPagina,
+        skip: ( Number(pagina) - 1) * porPagina,
+        orderBy: [
+          {
+            nome: 'asc',
+          },
+        ],
+      })
+
+      return res.status(200).json({ usuarios, total: completo.length, paginas: Math.ceil(completo.length/porPagina) })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)

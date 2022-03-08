@@ -4,7 +4,7 @@ import { connect } from 'http2'
 
 const prisma = new PrismaClient()
 
-class UsuariosController {
+class UnidadesController {
   async novaUnidade (req: Request, res: Response) {
     console.log('Cadastrando nova unidade...')
     try {
@@ -27,11 +27,8 @@ class UsuariosController {
       const { idUnidade } = req.params
 
       const unidade = await prisma.unidades.findFirst({ where:{ id: Number(idUnidade) }})
-      console.log('Unidade:')
-      console.log(unidade)
-      console.log('----------------------')
 
-      return res.status(200).json({ usuario: unidade })
+      return res.status(200).json({ unidade })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
@@ -40,7 +37,7 @@ class UsuariosController {
 
   async pesquisarUnidades (req: Request, res: Response) {
     try {
-      const { nome, cep, cidade, uf, pag } = req.query
+      const { nome, cep, cidade, uf, pagina } = req.query
       const porPagina = 10
 
       const completo = await prisma.unidades.findMany({
@@ -59,7 +56,7 @@ class UsuariosController {
           uf: uf ? {equals: uf.toString(), mode: 'insensitive'} : undefined
         },
         take: porPagina,
-        skip: ( Number(pag) - 1)*porPagina,
+        skip: ( Number(pagina) - 1) * porPagina,
         orderBy: [
           {
             nome: 'asc',
@@ -132,4 +129,4 @@ class UsuariosController {
   }
 }
 
-export default new UsuariosController()
+export default new UnidadesController()
