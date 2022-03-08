@@ -11,10 +11,10 @@ const prisma = new PrismaClient()
 
 export default function authMiddleware (req: Request, res: Response, next: NextFunction) {
   try {
-    console.log('------------------------------------------------------------')
-    console.log('Rodando o middleware')
-    console.log(req)
-    console.log('------------------------------------------------------------')
+    console.log('====================================')
+    console.log('Middleware')
+    console.log(req.route.path)
+    console.log('====================================')
     const authHeader = req.headers.authorization
     const ipOrigem = requestIp.getClientIp(req)
 
@@ -29,9 +29,8 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
           return res.status(401).send({ message: 'Erro de autenticação' })
         }
 
-        console.log(headerToken)
-
         const idUsuario = headerToken.userId.toString()
+        const perfil = headerToken.perfil
 
         const userTk = await prisma.refreshKeys.findFirst({ where: {idUsuario, ipOrigem}})
         const now = new Date()
@@ -50,10 +49,7 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
           }
         }
 
-        const usuario = await prisma.usuarios.findFirst({ where: {id: idUsuario}})
-        console.log(usuario)
-
-        if(usuario.perfilUsuario !== 1 ){
+        if(perfil !== 1 ){
           const rotasGestor = [
             '/unidades/novo',
             '/unidades/:idUnidade/vincularUsuario'

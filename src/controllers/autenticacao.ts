@@ -31,7 +31,8 @@ class AutenticacaoController {
 
       const infosToken = {
         userId: usuario.id,
-        email: usuario.email
+        email: usuario.email,
+        perfil: usuario.perfilUsuario
       }
 
       const jwt = sign(infosToken, process.env.JWT_TOKEN)

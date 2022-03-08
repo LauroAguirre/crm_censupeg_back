@@ -22,7 +22,6 @@ class UsuariosController {
     }
   }
 
-
   async buscarUnidade (req: Request, res: Response) {
     try {
       const { idUnidade } = req.params
@@ -33,6 +32,37 @@ class UsuariosController {
       console.log('----------------------')
 
       return res.status(200).json({ usuario: unidade })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
+  async pesquisarUnidades (req: Request, res: Response) {
+    try {
+      const { nome, cep, cidade, uf } = req.query
+
+      const unidades = await prisma.unidades.findMany({
+        where:{
+          nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
+          cep: cep ? {equals: cep.toString().replace(/\D/g, '')} : undefined,
+          cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
+          uf: uf ? {equals: uf.toString(), mode: 'insensitive'} : undefined
+        },
+        orderBy: [
+          {
+            nome: 'asc',
+          },
+          {
+            uf: 'asc',
+          },
+          {
+            cidade: 'asc',
+          },
+        ],
+      })
+
+      return res.status(200).json({ usuario: unidades })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
@@ -58,10 +88,6 @@ class UsuariosController {
 
       const unidade = await prisma.unidades.findFirst({ where:{ id: Number(idUnidade) }, include: {usuarios: true}})
 
-      // console.log('Unidade:')
-      // console.log(unidade)
-      // console.log('----------------------')
-
       return res.status(200).json({ unidade })
     } catch (error) {
       console.error(error)
@@ -86,10 +112,6 @@ class UsuariosController {
       })
 
       const unidade = await prisma.unidades.findFirst({ where:{ id: Number(idUnidade) }, include: {usuarios: true}})
-
-      // console.log('Unidade:')
-      // console.log(unidade)
-      // console.log('----------------------')
 
       return res.status(200).json({ unidade })
     } catch (error) {

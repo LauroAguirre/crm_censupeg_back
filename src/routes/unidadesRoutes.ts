@@ -5,6 +5,7 @@ import authMiddleware from 'src/middleware/authMiddleware'
 const router = Router()
 
 router.get('/unidades/:idUnidade', authMiddleware, unidadesController.buscarUnidade)
+router.get('/pesquisarUnidades', authMiddleware, unidadesController.pesquisarUnidades)
 
 router.put('/unidades/:idUnidade/vincularUsuario', authMiddleware, unidadesController.vincularUsuario)
 router.put('/unidades/:idUnidade/removerUsuario', authMiddleware, unidadesController.removerUsuario)
