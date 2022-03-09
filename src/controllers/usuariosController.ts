@@ -60,7 +60,14 @@ class UsuariosController {
     try {
       const { idUnidade } = req.query
 
-      const usuarios = await prisma.usuarios.findFirst({ where:{ unidadesId: Number(idUnidade) }})
+      const usuarios = await prisma.usuarios.findFirst({
+        where:{ unidadesId: Number(idUnidade) },
+        orderBy: [
+          {
+            nome: 'asc',
+          },
+        ],
+      })
 
       return res.status(200).json({ usuarios })
     } catch (error) {
