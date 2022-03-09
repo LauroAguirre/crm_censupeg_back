@@ -71,8 +71,7 @@ class UsuariosController {
 
   async pesquisarUsuários (req: Request, res: Response) {
     try {
-      const { pagina, unidade, nome, email, ativo} = req.query
-      const porPagina = 10
+      const { pagina, porPagina, unidade, nome, email, ativo} = req.query
 
       const completo = await prisma.usuarios.findMany({
         where:{
@@ -89,8 +88,8 @@ class UsuariosController {
           email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
           ativo: ativo ? Boolean(ativo) : undefined
         },
-        take: porPagina,
-        skip: ( Number(pagina) - 1) * porPagina,
+        take: Number(porPagina),
+        skip: ( Number(pagina) - 1) * Number(porPagina),
         orderBy: [
           {
             nome: 'asc',
@@ -98,7 +97,7 @@ class UsuariosController {
         ],
       })
 
-      return res.status(200).json({ usuarios, total: completo.length, paginas: Math.ceil(completo.length/porPagina) })
+      return res.status(200).json({ usuarios, total: completo.length, paginas: Math.ceil(completo.length/Number(porPagina)) })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)

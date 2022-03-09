@@ -37,8 +37,7 @@ class UnidadesController {
 
   async pesquisarUnidades (req: Request, res: Response) {
     try {
-      const { nome, cep, cidade, uf, pagina } = req.query
-      const porPagina = 10
+      const { pagina, porPagina, nome, cep, cidade, uf  } = req.query
 
       const completo = await prisma.unidades.findMany({
         where:{
@@ -55,8 +54,8 @@ class UnidadesController {
           cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
           uf: uf ? {equals: uf.toString(), mode: 'insensitive'} : undefined
         },
-        take: porPagina,
-        skip: ( Number(pagina) - 1) * porPagina,
+        take: Number(porPagina),
+        skip: ( Number(pagina) - 1) * Number(porPagina),
         orderBy: [
           {
             nome: 'asc',
@@ -70,7 +69,7 @@ class UnidadesController {
         ],
       })
 
-      return res.status(200).json({ unidades, total: completo.length, paginas: Math.ceil(completo.length/porPagina) })
+      return res.status(200).json({ unidades, total: completo.length, paginas: Math.ceil(completo.length/Number(porPagina)) })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
