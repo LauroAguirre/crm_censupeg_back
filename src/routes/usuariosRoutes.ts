@@ -5,10 +5,11 @@ import authMiddleware from 'src/middleware/authMiddleware'
 
 const router = Router()
 
-router.get('/usuarios/:idUsuario', usuariosController.buscarUsuario)
-router.get('/usuarios/logado', usuariosController.getUsuarioLogado)
+router.get('/usuarios/:idUsuario', authMiddleware, usuariosController.buscarUsuario)
+router.get('/usuarios/logado', authMiddleware, usuariosController.getUsuarioLogado)
+router.get('/usuarios/getUsuariosUnidade', authMiddleware, usuariosController.getUsuariosUnidade)
 
-router.post('/usuarios/novo', usuariosController.novoUsuario)
+router.post('/usuarios/novo', authMiddleware, usuariosController.novoUsuario)
 
 
 export default router
