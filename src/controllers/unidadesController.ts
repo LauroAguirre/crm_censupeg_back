@@ -76,6 +76,29 @@ class UnidadesController {
     }
   }
 
+  async getListaUnidades (req: Request, res: Response) {
+    try {
+      const unidades = await prisma.unidades.findMany({
+        orderBy: [
+          {
+            nome: 'asc',
+          },
+          {
+            uf: 'asc',
+          },
+          {
+            cidade: 'asc',
+          },
+        ],
+      })
+
+      return res.status(200).json({ unidades })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
   async vincularUsuario (req: Request, res: Response) {
     console.log('iniciando a vincular usuário..')
     try {
