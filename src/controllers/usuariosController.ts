@@ -31,7 +31,10 @@ class UsuariosController {
         }
 
         const idUsuario = headerToken.userId.toString()
-        const usuario = await prisma.usuarios.findFirst({ where:{ id: idUsuario }})
+        const usuario = await prisma.usuarios.findFirst({
+          where:{ id: idUsuario },
+          include: { Unidades: true}
+        })
 
         return res.status(200).json({ usuario })
       })
@@ -47,7 +50,10 @@ class UsuariosController {
     try {
       const { idUsuario } = req.params
 
-      const usuario = await prisma.usuarios.findFirst({ where:{ id: idUsuario }})
+      const usuario = await prisma.usuarios.findFirst({
+        where:{ id: idUsuario },
+        include: { Unidades: true}
+      })
 
       return res.status(200).json({ usuario })
     } catch (error) {
@@ -60,7 +66,7 @@ class UsuariosController {
     try {
       const { idUnidade } = req.query
 
-      const usuarios = await prisma.usuarios.findFirst({
+      const usuarios = await prisma.usuarios.findMany({
         where:{ unidadesId: Number(idUnidade) },
         orderBy: [
           {
@@ -105,6 +111,27 @@ class UsuariosController {
       })
 
       return res.status(200).json({ usuarios, total: completo.length, paginas: Math.ceil(completo.length/Number(porPagina)) })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
+  async getListaUsuarios (req: Request, res: Response) {
+    try {
+      const { idUnidade } = req.query
+
+      const usuarios = await prisma.usuarios.findMany({
+        where:{ unidadesId: { not: Number(idUnidade) }},
+        include: { Unidades: true},
+        orderBy: [
+          {
+            nome: 'asc',
+          },
+        ],
+      })
+
+      return res.status(200).json({ usuarios })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
