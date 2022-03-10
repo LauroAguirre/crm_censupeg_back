@@ -82,7 +82,7 @@ class UsuariosController {
     }
   }
 
-  async pesquisarUsuários (req: Request, res: Response) {
+  async pesquisarUsuarios (req: Request, res: Response) {
     try {
       const { pagina, porPagina, unidade, nome, email, ativo} = req.query
 
