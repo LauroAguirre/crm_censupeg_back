@@ -26,7 +26,10 @@ class UnidadesController {
     try {
       const { idUnidade } = req.params
 
-      const unidade = await prisma.unidades.findFirst({ where:{ id: Number(idUnidade) }})
+      const unidade = await prisma.unidades.findFirst({
+        where:{ id: Number(idUnidade) },
+        include:{ usuarios:true }
+      })
 
       return res.status(200).json({ unidade })
     } catch (error) {
