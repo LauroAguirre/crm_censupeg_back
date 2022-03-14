@@ -36,7 +36,9 @@ class UsuariosController {
           include: { Unidades: true}
         })
 
-        return res.status(200).json({ usuario })
+        delete usuario.senha
+
+        return res.status(200).json(usuario)
       })
 
 
@@ -55,7 +57,9 @@ class UsuariosController {
         include: { Unidades: true}
       })
 
-      return res.status(200).json({ usuario })
+      delete usuario.senha
+
+      return res.status(200).json( usuario )
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
