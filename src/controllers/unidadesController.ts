@@ -119,9 +119,9 @@ class UnidadesController {
         }
       })
 
-      const unidade = await prisma.unidades.findFirst({ where:{ id: Number(idUnidade) }, include: {usuarios: true}})
+      const usuario = await prisma.usuarios.findFirst({ where:{ id: idUsuario }})
 
-      return res.status(200).json({ unidade })
+      return res.status(200).json({ unidade: usuario })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
