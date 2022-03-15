@@ -121,7 +121,7 @@ class UnidadesController {
 
       const usuario = await prisma.usuarios.findFirst({ where:{ id: idUsuario }})
 
-      return res.status(200).json({ unidade: usuario })
+      return res.status(200).json({ usuario })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
