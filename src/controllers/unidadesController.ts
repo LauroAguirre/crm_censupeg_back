@@ -22,6 +22,27 @@ class UnidadesController {
     }
   }
 
+  async editarUnidade (req: Request, res: Response) {
+    console.log('Editando unidade...')
+    try {
+      const { nome, cep, logradouro, numero, complemento, bairro, cidade, uf } = req.body
+      const { idUnidade } = req.params
+
+      const unidade = await prisma.unidades.update({
+        where: {id: Number(idUnidade)},
+        data:{ nome, cep: cep.replace(/\D/g, ''), logradouro, numero, complemento, bairro, cidade, uf }
+      })
+      console.log('Unidade:')
+      console.log(unidade)
+      console.log('----------------------')
+
+      return res.status(200).json({ unidade })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
   async buscarUnidade (req: Request, res: Response) {
     try {
       const { idUnidade } = req.params
