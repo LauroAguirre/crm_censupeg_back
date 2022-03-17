@@ -196,7 +196,7 @@ class UsuariosController {
 
       await prisma.usuarios.update({
         where: {id: idUsuario.toString()},
-        data:{ senha:  bcrypt.hashSync(novaSenha, 8)}
+        data:{ senha:  bcrypt.hashSync(novaSenha, 8), senhaTemp: false}
       })
 
       delete usuario.senha
