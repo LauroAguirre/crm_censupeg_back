@@ -11,6 +11,11 @@ router.get('/getUsuariosUnidade', authMiddleware, usuariosController.getUsuarios
 router.get('/pesquisarUsuarios', authMiddleware, usuariosController.pesquisarUsuarios)
 router.get('/getListaUsuarios', authMiddleware, usuariosController.getListaUsuarios)
 
+
+router.put('/usuarios/:idUsuario/editar', authMiddleware, usuariosController.editarUsuario)
+router.put('/usuarios/:idUsuario/resetarSenha', authMiddleware, usuariosController.resetarSenha)
+router.put('/usuarios/:idUsuario/atualizarSenha', authMiddleware, usuariosController.atualizarSenha)
+
 router.post('/usuarios/novo', authMiddleware, usuariosController.novoUsuario)
 
 
