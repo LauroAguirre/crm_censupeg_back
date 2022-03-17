@@ -15,6 +15,7 @@ model Usuarios {
   telefone      String?
   email         String        @db.VarChar(120)
   senha         String        @db.VarChar(80)
+  senhaTemp     Boolean       @default(true)
   perfilUsuario Int
   ativo         Boolean       @default(true)
   RefreshKeys   RefreshKeys[]
