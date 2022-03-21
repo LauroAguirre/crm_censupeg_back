@@ -40,9 +40,9 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
         if (!userTk) {
           await CriarRefreshTk.createRefresh(idUsuario, token, ipOrigem)
         } else {
-          if (userTk.tokenAtual !== token || dayjs(userTk.dataExpiracao).isBefore(dayjs(now))) {
+          if (userTk.tokenAtual !== token || dayjs(userTk.dtExpiracao).isBefore(dayjs(now))) {
             console.log('Autenticação expirada.')
-            console.log(`Data expiração: ${userTk?.dataExpiracao}`)
+            console.log(`Data expiração: ${userTk?.dtExpiracao}`)
             console.log(`Token Header: ${token}`)
             console.log(`Token DB: ${userTk?.tokenAtual}`)
             return res.status(401).send({ message: 'Erro de autenticação' })

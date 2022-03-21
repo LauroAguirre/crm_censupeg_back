@@ -17,18 +17,18 @@ class UsuariosController {
 
       const usuario = await prisma.usuarios.create({ data:{ nome, telefone, email, senha: bcrypt.hashSync(senha, 8), perfilUsuario, ativo }})
 
-      if(idUnidade > 0){
-        await prisma.unidades.update({
-          where: { id: idUnidade },
-          data: {
-            usuarios: {
-              connect: {
-                id: usuario.id,
-              }
-            }
-          }
-        })
-      }
+      // if(idUnidade > 0){
+      //   await prisma.unidades.update({
+      //     where: { id: idUnidade },
+      //     data: {
+      //       usuarios: {
+      //         connect: {
+      //           id: usuario.id,
+      //         }
+      //       }
+      //     }
+      //   })
+      // }
 
       return res.status(200).json({ usuario, senha })
     } catch (error) {

@@ -7,29 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuarios {
-  id            String        @id @default(uuid())
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  nome          String        @db.VarChar(80)
-  telefone      String?
-  email         String        @db.VarChar(120)
-  senha         String        @db.VarChar(80)
-  senhaTemp     Boolean       @default(true)
-  perfilUsuario Int
-  ativo         Boolean       @default(true)
-  RefreshKeys   RefreshKeys[]
-  Unidades      Unidades?     @relation(fields: [unidadesId], references: [id])
-  unidadesId    Int?
+model Candidatos {
+  id            String    @id @default(uuid()) @map("id_candidato")
+  dtCadastro    DateTime  @default(now()) @map("dt_cadastro")
+  nome          String
+  email         String
+  fone1         String
+  fone2         String?
+  cpf           String?
+  dtNascimento  DateTime? @map("dt_nascimento")
+  escolaridade  Int?
+  cursoAtual    String?   @map("curso_atuao")
+  cidade        String
+  uf            String
+  alunoCensupeg Boolean   @default(false) @map("aluno_censupeg")
+  outrasInfos   String?   @map("outras_infos")
+  usuario       Usuarios  @relation(fields: [idUsuarioCad], references: [id])
+  idUsuarioCad  String    @map("id_usuario_cadastro")
+  dtUltContato  DateTime? @map("dt_ultimo_contato")
+
+  @@map("candidatos")
+}
+
+model Empresas {
+  id           String    @id @default(uuid()) @map("id_empresa")
+  nome         String
+  razaoSocial  String?   @map("razao_social")
+  cnpj         String?
+  nomeContato  String    @map("nome_contato")
+  emailContato String?   @map("email_contato")
+  foneContato  String?   @map("fone_contato")
+  foneContato2 String?   @map("fone_contato_2")
+  situacao     Int
+  outrasInfos  String?   @map("outras_infos")
+  usuario      Usuarios  @relation(fields: [idUsuarioCad], references: [id])
+  idUsuarioCad String    @map("id_usuario_cad")
+  dtUltContato DateTime? @map("dt_ultimo_contato")
+
+  @@map("empresas")
 }
 
 model RefreshKeys {
-  id            String   @id @default(uuid())
-  dataExpiracao DateTime
-  tokenAtual    String
-  usuario       Usuarios @relation(fields: [idUsuario], references: [id])
-  idUsuario     String
-  ipOrigem      String?
+  id          String   @id @default(uuid())
+  dtExpiracao DateTime @map("dt_expiracao")
+  tokenAtual  String   @map("token_atual")
+  usuario     Usuarios @relation(fields: [idUsuario], references: [id])
+  idUsuario   String   @map("id_usuario")
+  ipOrigem    String?  @map("ip_origem")
 }
 
 model Unidades {
@@ -43,4 +67,22 @@ model Unidades {
   cidade      String
   uf          String
   usuarios    Usuarios[]
+}
+
+model Usuarios {
+  id            String        @id @default(uuid())
+  dtCadastro    DateTime      @default(now()) @map("dt_cadastro")
+  dtAtualizacao DateTime      @updatedAt @map("dt_atualizacao")
+  nome          String        @db.VarChar(80)
+  telefone      String?
+  email         String        @db.VarChar(120)
+  senha         String        @db.VarChar(80)
+  senhaTemp     Boolean       @default(true) @map("senha_temp")
+  perfilUsuario Int           @map("perfil_usuario")
+  ativo         Boolean       @default(true)
+  RefreshKeys   RefreshKeys[]
+  Unidades      Unidades?     @relation(fields: [unidadesId], references: [id])
+  unidadesId    Int?          @map("id_unidade")
+  Candidatos    Candidatos[]
+  Empresas      Empresas[]
 }

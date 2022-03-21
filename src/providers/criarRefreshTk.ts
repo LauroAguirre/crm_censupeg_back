@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 class CriarRefreshTk {
   async createRefresh (idUsuario: string, tokenAtual: string, ipOrigem:string) {
-    const dataExpiracao = dayjs().add(Number(process.env.DEFAULT_EXPIRATION_TIME), 'days').toDate()
+    const dtExpiracao = dayjs().add(Number(process.env.DEFAULT_EXPIRATION_TIME), 'days').toDate()
 
     const ultimoLogin = await prisma.refreshKeys.findFirst({where:{idUsuario, ipOrigem}})
 
@@ -16,13 +16,13 @@ class CriarRefreshTk {
         },
         data: {
           tokenAtual,
-          dataExpiracao
+          dtExpiracao
         }})
       return novoToken
     } else {
       const novoToken = await prisma.refreshKeys.create({
         data:{
-          dataExpiracao,
+          dtExpiracao,
           idUsuario,
           tokenAtual,
           ipOrigem

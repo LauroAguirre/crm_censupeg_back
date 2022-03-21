@@ -16,7 +16,7 @@
     "start:prod": "yarn build:prod && npx --exec ts-node --files build/server.js"
   },
   "dependencies": {
-    "@prisma/client": "^3.10.0",
+    "@prisma/client": "^3.11.0",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "commitizen": "^4.2.4",
