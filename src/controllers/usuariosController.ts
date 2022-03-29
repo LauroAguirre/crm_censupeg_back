@@ -107,6 +107,8 @@ class UsuariosController {
     try {
       const { pagina, porPagina, unidade, nome, email, ativo} = req.query
 
+      const filtroAtivos = ativo ? ativo === 'true' : undefined
+
       const completo = await prisma.usuarios.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
@@ -120,7 +122,7 @@ class UsuariosController {
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           unidadesId: unidade ? {equals: Number(unidade)} : undefined,
           email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
-          ativo: ativo ? Boolean(ativo) : undefined
+          ativo: filtroAtivos
         },
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),
