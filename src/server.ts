@@ -8,6 +8,7 @@ import routes from './routes/defaultRoutes'
 import auth from './routes/authRoutes'
 import usuarios from './routes/usuariosRoutes'
 import unidades from './routes/unidadesRoutes'
+import { PrismaClient } from '@prisma/client'
 // import usr from './routes/usrRoutes'
 // import careUnit from './routes/careUnitRoutes'
 // import doctor from './routes/doctorRoutes'
@@ -85,4 +86,15 @@ const server = http.createServer(app)
 server.listen(PORT, () => (console.log(`Startou na porta ${PORT}`)))
 server.on('error', onError)
 server.on('listening', onListening)
-// app.listen(3001)
+
+const prisma = new PrismaClient()
+
+prisma.$connect()
+  .then(res =>{
+    console.log('Conexão com banco: OK')
+    prisma.$disconnect()
+  })
+  .catch(err => {
+    console.log('Falha ao conectar com o banco')
+    console.log(err)
+  })
