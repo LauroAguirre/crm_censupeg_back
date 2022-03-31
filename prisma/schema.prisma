@@ -39,8 +39,8 @@ model Cursos {
   tipo            Int
   valor           Decimal
   duracao         String
-  link            String
-  infosAdicionais String   @map("ifnos_adicionais")
+  link            String?
+  infosAdicionais String?  @map("ifnos_adicionais")
 
   CursosEmUnidades CursosEmUnidades[]
   @@map("cursos")
