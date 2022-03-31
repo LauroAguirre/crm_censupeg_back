@@ -85,7 +85,7 @@ class CursosController {
 
   async getListaCursosUnidade (req: Request, res: Response) {
     try {
-      const { idUnidade } = req.query
+      const { idUnidade } = req.params
 
       const usuarios = await prisma.usuarios.findMany({
         where:{ unidadesId: { not: Number(idUnidade) }},

@@ -8,6 +8,7 @@ import routes from './routes/defaultRoutes'
 import auth from './routes/authRoutes'
 import usuarios from './routes/usuariosRoutes'
 import unidades from './routes/unidadesRoutes'
+import cursos from './routes/cursosRoutes'
 import { PrismaClient } from '@prisma/client'
 // import usr from './routes/usrRoutes'
 // import careUnit from './routes/careUnitRoutes'
@@ -80,6 +81,7 @@ app.use(routes)
 app.use(auth)
 app.use(usuarios)
 app.use(unidades)
+app.use(cursos)
 
 const server = http.createServer(app)
 
