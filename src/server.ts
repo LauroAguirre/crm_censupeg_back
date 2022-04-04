@@ -3,22 +3,13 @@ import cors from 'cors'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 
-// import './database/connect'
 import routes from './routes/defaultRoutes'
 import auth from './routes/authRoutes'
 import usuarios from './routes/usuariosRoutes'
 import unidades from './routes/unidadesRoutes'
 import cursos from './routes/cursosRoutes'
+import empresas from './routes/empresasRoutes'
 import { PrismaClient } from '@prisma/client'
-// import usr from './routes/usrRoutes'
-// import careUnit from './routes/careUnitRoutes'
-// import doctor from './routes/doctorRoutes'
-// import patient from './routes/patientRoutes'
-// import gestation from './routes/gestationRoutes'
-// import appointments from './routes/appointmentsRoutes'
-// import healthInsurance from './routes/healthInsuranceRoutes'
-// import vacines from './routes/vacinesRoutes'
-// import exams from './routes/examsRoutes'
 
 require('dotenv').config()
 
@@ -82,6 +73,7 @@ app.use(auth)
 app.use(usuarios)
 app.use(unidades)
 app.use(cursos)
+app.use(empresas)
 
 const server = http.createServer(app)
 

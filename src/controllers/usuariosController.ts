@@ -11,11 +11,11 @@ class UsuariosController {
   async novoUsuario (req: Request, res: Response) {
     try {
       // const { nome, telefone, email, senha, perfilUsuario, ativo, idUnidade } = req.body
-      const { nome, telefone, email, perfilUsuario, ativo, idUnidade } = req.body
+      const { nome, telefone, email, perfilUsuario, ativo, cpf, idUnidade } = req.body
 
       const senha = gerarSenha.gerarNovaSenha(5)
 
-      const usuario = await prisma.usuarios.create({ data:{ nome, telefone, email, senha: bcrypt.hashSync(senha, 8), perfilUsuario, ativo }})
+      const usuario = await prisma.usuarios.create({ data:{ nome, telefone, email, senha: bcrypt.hashSync(senha, 8), perfilUsuario, ativo, cpf }})
 
       // if(idUnidade > 0){
       //   await prisma.unidades.update({
@@ -105,13 +105,14 @@ class UsuariosController {
 
   async pesquisarUsuarios (req: Request, res: Response) {
     try {
-      const { pagina, porPagina, unidade, nome, email, ativo} = req.query
+      const { pagina, porPagina, unidade, nome, email, ativo, cpf} = req.query
 
       const filtroAtivos = ativo ? ativo === 'true' : undefined
 
       const completo = await prisma.usuarios.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
+          cpf: cpf ? {equals: cpf.toString().replace(/\D/g, '')} : undefined,
           unidadesId: unidade ? {equals: Number(unidade)} : undefined,
           email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
           ativo: ativo ? Boolean(ativo) : undefined
@@ -120,6 +121,7 @@ class UsuariosController {
       const usuarios = await prisma.usuarios.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
+          cpf: cpf ? {equals: cpf.toString().replace(/\D/g, '')} : undefined,
           unidadesId: unidade ? {equals: Number(unidade)} : undefined,
           email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
           ativo: filtroAtivos
@@ -164,12 +166,12 @@ class UsuariosController {
   async editarUsuario (req: Request, res: Response) {
     console.log('Editando usuário...')
     try {
-      const { nome, telefone, email, perfilUsuario, ativo } = req.body
+      const { nome, telefone, email, perfilUsuario, ativo, cpf } = req.body
       const { idUsuario } = req.params
 
       const usuario = await prisma.usuarios.update({
         where: {id: idUsuario.toString()},
-        data:{ nome, telefone: telefone.replace(/\D/g, ''), email, perfilUsuario, ativo }
+        data:{ nome, telefone: telefone.replace(/\D/g, ''), email, perfilUsuario, ativo, cpf }
       })
       console.log('Usuário:')
       console.log(usuario)

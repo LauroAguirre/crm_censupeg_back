@@ -105,6 +105,7 @@ model Usuarios {
   dtCadastro            DateTime      @default(now()) @map("dt_cadastro")
   dtAtualizacao         DateTime      @updatedAt @map("dt_atualizacao")
   nome                  String        @db.VarChar(80)
+  cpf                   String?
   telefone              String?
   email                 String        @db.VarChar(120)
   senha                 String        @db.VarChar(80)

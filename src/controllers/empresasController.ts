@@ -138,28 +138,24 @@ class EmpresasController {
     }
   }
 
-  // async getListaCandidatos (req: Request, res: Response) {
-  //   try {
-  //     const { idUnidade } = req.query
+  async getListaEmpresas (req: Request, res: Response) {
+    try {
+      const empresas = await prisma.empresas.findMany({
+        orderBy: [
+          {
+            nome: 'asc',
+          },
+        ],
+      })
 
-  //     const usuarios = await prisma.usuarios.findMany({
-  //       where:{ unidadesId: { not: Number(idUnidade) }},
-  //       include: { Unidades: true},
-  //       orderBy: [
-  //         {
-  //           nome: 'asc',
-  //         },
-  //       ],
-  //     })
+      return res.status(200).json({ empresas })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
 
-  //     return res.status(200).json({ usuarios })
-  //   } catch (error) {
-  //     console.error(error)
-  //     return res.status(500).json(error)
-  //   }
-  // }
-
-  async editarCandidato (req: Request, res: Response) {
+  async editarEmpresa (req: Request, res: Response) {
     console.log('Editando usuário...')
     try {
       const { nome, email, fone1, fone2, cpf, dtNascimento,

@@ -53,28 +53,30 @@ class CursosController {
       const completo = await prisma.cursos.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
-          modalidade: modalidade ? Number(modalidade) : null,
-          tipo: tipo ? Number(tipo) : null,
-          valor: valor ? Number(valor) : null,
+          modalidade: modalidade ? Number(modalidade) : undefined,
+          tipo: tipo ? Number(tipo) : undefined,
+          valor: valor ? Number(valor) : undefined,
           duracao: duracao ? {contains: duracao.toString(), mode: 'insensitive'} : undefined,
         }})
 
       const cursos = await prisma.cursos.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
-          modalidade: modalidade ? Number(modalidade) : null,
-          tipo: tipo ? Number(tipo) : null,
-          valor: valor ? Number(valor) : null,
+          modalidade: modalidade ? Number(modalidade) : undefined,
+          tipo: tipo ? Number(tipo) : undefined,
+          valor: valor ? Number(valor) : undefined,
           duracao: duracao ? {contains: duracao.toString(), mode: 'insensitive'} : undefined,
         },
-        take: Number(porPagina),
-        skip: ( Number(pagina) - 1) * Number(porPagina),
+        take: porPagina ? Number(porPagina) : 10,
+        skip: 0,//( Number(pagina) - 1) * Number(porPagina),
         orderBy: [
           {
             nome: 'asc',
           },
         ],
       })
+
+      console.log(cursos)
 
       return res.status(200).json({ cursos, total: completo.length, paginas: Math.ceil(completo.length/Number(porPagina)) })
     } catch (error) {
