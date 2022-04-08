@@ -12,7 +12,7 @@ router.get('/getListaempresas', authMiddleware, empresasController.getListaEmpre
 router.put('/empresas/:idEmpresa/editar', authMiddleware, empresasController.editarEmpresa)
 
 
-router.post('/novoCurso', authMiddleware, empresasController.novaEmpresa)
+router.post('/novaEmpresa', authMiddleware, empresasController.novaEmpresa)
 
 
 export default router
