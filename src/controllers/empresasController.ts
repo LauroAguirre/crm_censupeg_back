@@ -11,7 +11,8 @@ const prisma = new PrismaClient()
 class EmpresasController {
   async novaEmpresa (req: Request, res: Response) {
     try {
-      const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, situacao, outrasInfos } = req.body
+      const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, situacao,
+        cep, logradouro, numero, complemento, bairro, cidade, uf, outraSituacao, outrasInfos } = req.body
 
         const authHeader = req.headers.authorization
         const [, token] = authHeader.split(' ')
@@ -33,8 +34,16 @@ class EmpresasController {
             nomeContato,
             emailContato,
             foneContato: foneContato.replace(/\D/g, ''),
-            foneContato2: foneContato2.replace(/\D/g, ''),
+            foneContato2: foneContato2 ? foneContato2.replace(/\D/g, '') : null,
             situacao,
+            outraSituacao,
+            cep: cep ? cep.replace(/\D/g, '') : null,
+            logradouro,
+            numero,
+            complemento,
+            bairro,
+            cidade,
+            uf,
             outrasInfos,
             dtUltContato: new Date(),
             usuarioCad: {

@@ -38,6 +38,7 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
         if (!userTk) console.log('Não tem o cookie')
 
         if (!userTk) {
+          console.log(`idUsuario: ${idUsuario}`)
           await CriarRefreshTk.createRefresh(idUsuario, token, ipOrigem)
         } else {
           if (userTk.tokenAtual !== token || dayjs(userTk.dtExpiracao).isBefore(dayjs(now))) {

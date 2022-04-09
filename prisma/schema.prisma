@@ -77,6 +77,13 @@ model Empresas {
   foneContato2        String?   @map("fone_contato_2")
   situacao            Int
   outraSituacao       String?   @map("outra_situacao")
+  cep                 String?
+  logradouro          String?
+  numero              String?
+  complemento         String?
+  bairro              String?
+  cidade              String?
+  uf                  String?
   outrasInfos         String?   @map("outras_infos")
   usuarioCad          Usuarios  @relation("usuarioCadEmpresa", fields: [idUsuarioCad], references: [id])
   idUsuarioCad        String    @map("id_usuario_cad")
