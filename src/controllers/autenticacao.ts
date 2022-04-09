@@ -28,6 +28,7 @@ class AutenticacaoController {
       const validatePass = await bcrypt.compare(senha, usuario.senha)
 
       if (!validatePass) {
+        console.log('senha inválida')
         return res.status(401).send({ message: 'Usuário ou senha inválidos!' })
       }
 

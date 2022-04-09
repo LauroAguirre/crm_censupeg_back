@@ -17,6 +17,7 @@ model Candidatos {
   cpf                 String?
   dtNascimento        DateTime? @map("dt_nascimento")
   escolaridade        Int?
+  formacao            String?
   cursoAtual          String?   @map("curso_atuao")
   cidade              String
   uf                  String
@@ -27,6 +28,14 @@ model Candidatos {
   idUsuarioCad        String?   @map("id_usuario_cadastro")
   usuarioUltContato   Usuarios? @relation("usuarioUltContatoCandidato", fields: [idUsuarioUltContato], references: [id])
   idUsuarioUltContato String?   @map("id_usuario_ultimo_contato")
+  sexo                String
+  contatoMatutino     Boolean   @default(false) @map("contato_matutino")
+  contatoVespertino   Boolean   @default(false) @map("contato_vespertino")
+  contatoNoturno      Boolean   @default(false) @map("contato_noturno")
+  interessePos        Boolean   @default(false) @map("interesse_pos")
+  interesseGraduacao  Boolean   @default(false) @map("interesse_graduacao")
+  interessePresencial Boolean   @default(false) @map("interesse_presencial")
+  interesseEad        Boolean   @default(false) @map("interesse_ead")
 
   @@map("candidatos")
 }
@@ -67,6 +76,7 @@ model Empresas {
   foneContato         String?   @map("fone_contato")
   foneContato2        String?   @map("fone_contato_2")
   situacao            Int
+  outraSituacao       String?   @map("outra_situacao")
   outrasInfos         String?   @map("outras_infos")
   usuarioCad          Usuarios  @relation("usuarioCadEmpresa", fields: [idUsuarioCad], references: [id])
   idUsuarioCad        String    @map("id_usuario_cad")

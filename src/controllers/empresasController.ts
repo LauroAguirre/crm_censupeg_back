@@ -29,11 +29,11 @@ class EmpresasController {
           const empresa = await prisma.empresas.create({ data:{
             nome,
             razaoSocial,
-            cnpj,
+            cnpj: cnpj.replace(/\D/g, ''),
             nomeContato,
             emailContato,
-            foneContato,
-            foneContato2,
+            foneContato: foneContato.replace(/\D/g, ''),
+            foneContato2: foneContato2.replace(/\D/g, ''),
             situacao,
             outrasInfos,
             dtUltContato: new Date(),
@@ -92,22 +92,14 @@ class EmpresasController {
           emailContato: emailContato ? {contains: emailContato.toString(), mode: 'insensitive'} : undefined,
           foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
           foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
-          situacao: Number(situacao),
-          // email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
-          // fone1: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
-          // fone2: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
-          // cpf: cpf ? {contains: cpf.toString().replace(/\D/g, '')} : undefined,
-          // escolaridade: escolaridade ? Number(escolaridade) : null,
-          // cursoAtual: cursoAtual ? {contains: cursoAtual.toString(), mode: 'insensitive'} : undefined,
-          // cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
-          // uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
+          situacao: situacao ? Number(situacao) : undefined,
           dtUltContato: {
             gte: inicioPeriodo,
             lt: dtContatoFim
           },
         }})
 
-      const candidatos = await prisma.empresas.findMany({
+      const empresas = await prisma.empresas.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           razaoSocial: razaoSocial ? {contains: razaoSocial.toString(), mode: 'insensitive'} : undefined,
@@ -116,7 +108,7 @@ class EmpresasController {
           emailContato: emailContato ? {contains: emailContato.toString(), mode: 'insensitive'} : undefined,
           foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
           foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
-          situacao: Number(situacao),
+          situacao: situacao ? Number(situacao) : undefined,
           dtUltContato: {
             gte: inicioPeriodo,
             lt: dtContatoFim
@@ -131,7 +123,7 @@ class EmpresasController {
         ],
       })
 
-      return res.status(200).json({ candidatos, total: completo.length, paginas: Math.ceil(completo.length/Number(porPagina)) })
+      return res.status(200).json({ empresas, total: completo.length, paginas: Math.ceil(completo.length/Number(porPagina)) })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
@@ -148,7 +140,14 @@ class EmpresasController {
         ],
       })
 
-      return res.status(200).json({ empresas })
+      const lista = empresas.map(empresa => {
+        return {idEmpresa: empresa.id, texto: `${empresa.nome} - ${empresa.cnpj.replace(
+          /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/,
+          '$1.$2.$3-$4/$5'
+        )}`}
+      })
+
+      return res.status(200).json(lista)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
@@ -158,31 +157,28 @@ class EmpresasController {
   async editarEmpresa (req: Request, res: Response) {
     console.log('Editando usuário...')
     try {
-      const { nome, email, fone1, fone2, cpf, dtNascimento,
-        escolaridade, cursoAtual, cidade, uf, alunoCensupeg } = req.body
+      const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, situacao, outrasInfos } = req.body
       const { idUsuario } = req.params
 
-      const candidato = await prisma.candidatos.update({
+      const empresa = await prisma.empresas.update({
         where: {id: idUsuario.toString()},
         data:{
           nome,
-          email,
-          fone1: fone1.replace(/\D/g, ''),
-          fone2: fone2.replace(/\D/g, ''),
-          cpf: cpf.replace(/\D/g, ''),
-          dtNascimento,
-          escolaridade,
-          cursoAtual,
-          cidade,
-          uf,
-          alunoCensupeg
+          razaoSocial,
+            cnpj: cnpj.replace(/\D/g, ''),
+            nomeContato,
+            emailContato,
+            foneContato: foneContato.replace(/\D/g, ''),
+            foneContato2: foneContato2.replace(/\D/g, ''),
+            situacao,
+            outrasInfos
         }
       })
-      console.log('Candidato:')
-      console.log(candidato)
+      console.log('Empresa:')
+      console.log(empresa)
       console.log('----------------------')
 
-      return res.status(200).json({ candidato })
+      return res.status(200).json(empresa)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)

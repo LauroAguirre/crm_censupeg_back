@@ -15,20 +15,17 @@ class UsuariosController {
 
       const senha = gerarSenha.gerarNovaSenha(5)
 
-      const usuario = await prisma.usuarios.create({ data:{ nome, telefone, email, senha: bcrypt.hashSync(senha, 8), perfilUsuario, ativo, cpf }})
-
-      // if(idUnidade > 0){
-      //   await prisma.unidades.update({
-      //     where: { id: idUnidade },
-      //     data: {
-      //       usuarios: {
-      //         connect: {
-      //           id: usuario.id,
-      //         }
-      //       }
-      //     }
-      //   })
-      // }
+      const usuario = await prisma.usuarios.create({
+        data:{
+          nome,
+          telefone,
+          email,
+          senha: bcrypt.hashSync(senha, 8),
+          perfilUsuario,
+          ativo,
+          cpf: cpf.replace(/\D/g, ''),
+        }
+      })
 
       return res.status(200).json({ usuario, senha })
     } catch (error) {
@@ -171,7 +168,14 @@ class UsuariosController {
 
       const usuario = await prisma.usuarios.update({
         where: {id: idUsuario.toString()},
-        data:{ nome, telefone: telefone.replace(/\D/g, ''), email, perfilUsuario, ativo, cpf }
+        data:{
+          nome,
+          telefone: telefone.replace(/\D/g, ''),
+          email,
+          perfilUsuario,
+          ativo,
+          cpf: cpf.replace(/\D/g, ''),
+        }
       })
       console.log('Usuário:')
       console.log(usuario)
