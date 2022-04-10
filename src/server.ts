@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser'
 
 import routes from './routes/defaultRoutes'
 import auth from './routes/authRoutes'
-import usuarios from './routes/usuariosRoutes'
+import funcionarios from './routes/funcionariosRoutes'
 import unidades from './routes/unidadesRoutes'
 import cursos from './routes/cursosRoutes'
 import empresas from './routes/empresasRoutes'
@@ -70,7 +70,7 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(routes)
 app.use(auth)
-app.use(usuarios)
+app.use(funcionarios)
 app.use(unidades)
 app.use(cursos)
 app.use(empresas)

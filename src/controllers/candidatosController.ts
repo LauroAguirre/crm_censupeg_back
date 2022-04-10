@@ -1,7 +1,5 @@
 import { Request, Response } from 'express'
-import { PrismaClient, Usuarios } from '@prisma/client'
-import bcrypt from 'bcryptjs'
-import gerarSenha from 'src/providers/gerarSenha'
+import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
 import { JWTHeader } from 'src/providers/JWTHeader'
 import dayjs from 'dayjs'
@@ -11,7 +9,7 @@ const prisma = new PrismaClient()
 class CandidatosController {
   async novoCandidato (req: Request, res: Response) {
     try {
-      const { nome, email, fone1, fone2, cpf, dtNascimento, escolaridade, cursoAtual, cidade, uf, alunoCensupeg, outrasInfos } = req.body
+      const { nome, email, fone1, fone2, cpf, sexo, dtNascimento, escolaridade, cursoAtual, cidade, uf, alunoCensupeg, outrasInfos } = req.body
 
         const authHeader = req.headers.authorization
         const [, token] = authHeader.split(' ')
@@ -21,9 +19,9 @@ class CandidatosController {
             return res.status(401).send({ message: 'Usuário não encontrado' })
           }
 
-          const idUsuario = headerToken.userId.toString()
-          const usuario = await prisma.usuarios.findFirst({
-            where:{ id: idUsuario }
+          const idFuncionario = headerToken.userId.toString()
+          const funcionario = await prisma.funcionarios.findFirst({
+            where:{ id: idFuncionario }
           })
 
           const candidato = await prisma.candidatos.create({ data:{
@@ -32,6 +30,7 @@ class CandidatosController {
             fone1,
             fone2,
             cpf,
+            sexo,
             dtNascimento,
             escolaridade,
             cursoAtual,
@@ -40,14 +39,14 @@ class CandidatosController {
             alunoCensupeg,
             outrasInfos,
             dtUltContato: new Date(),
-            usuarioCad: {
+            funcionarioCad: {
               connect:  {
-                id: usuario.id,
+                id: funcionario.id,
               }
             },
-            usuarioUltContato: {
+            funcionarioUltContato: {
               connect:  {
-                id: usuario.id,
+                id: funcionario.id,
               }
             }
           }})
@@ -164,10 +163,10 @@ class CandidatosController {
     try {
       const { nome, email, fone1, fone2, cpf, dtNascimento,
         escolaridade, cursoAtual, cidade, uf, alunoCensupeg } = req.body
-      const { idUsuario } = req.params
+      const { idFuncionario } = req.params
 
       const candidato = await prisma.candidatos.update({
-        where: {id: idUsuario.toString()},
+        where: {id: idFuncionario.toString()},
         data:{
           nome,
           email,

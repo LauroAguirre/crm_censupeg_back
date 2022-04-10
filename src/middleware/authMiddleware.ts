@@ -29,17 +29,17 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
           return res.status(401).send({ message: 'Erro de autenticação' })
         }
 
-        const idUsuario = headerToken.userId.toString()
+        const idFuncionario = headerToken.userId.toString()
         const perfil = headerToken.perfil
 
-        const userTk = await prisma.refreshKeys.findFirst({ where: {idUsuario, ipOrigem}})
+        const userTk = await prisma.refreshKeys.findFirst({ where: {idFuncionario, ipOrigem}})
         const now = new Date()
 
         if (!userTk) console.log('Não tem o cookie')
 
         if (!userTk) {
-          console.log(`idUsuario: ${idUsuario}`)
-          await CriarRefreshTk.createRefresh(idUsuario, token, ipOrigem)
+          console.log(`idFuncionario: ${idFuncionario}`)
+          await CriarRefreshTk.createRefresh(idFuncionario, token, ipOrigem)
         } else {
           if (userTk.tokenAtual !== token || dayjs(userTk.dtExpiracao).isBefore(dayjs(now))) {
             console.log('Autenticação expirada.')
@@ -53,7 +53,7 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
         if(perfil !== 1 ){
           const rotasGestor = [
             '/unidades/novo',
-            '/unidades/:idUnidade/vincularUsuario'
+            '/unidades/:idUnidade/vincularFuncionario'
           ]
 
           if(rotasGestor.findIndex(rota => rota === req.route.path) > -1) return res.status(401).send('Perfil não autorizado')

@@ -89,7 +89,7 @@ class CursosController {
     try {
       const { idUnidade } = req.params
 
-      const usuarios = await prisma.usuarios.findMany({
+      const funcionarios = await prisma.funcionarios.findMany({
         where:{ unidadesId: { not: Number(idUnidade) }},
         include: { Unidades: true},
         orderBy: [
@@ -99,7 +99,7 @@ class CursosController {
         ],
       })
 
-      return res.status(200).json({ usuarios })
+      return res.status(200).json(funcionarios)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)

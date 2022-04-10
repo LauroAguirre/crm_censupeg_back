@@ -7,52 +7,51 @@ import gerarSenha from 'src/providers/gerarSenha'
 
 const prisma = new PrismaClient()
 
-class UsuariosController {
-  async novoUsuario (req: Request, res: Response) {
+class FuncionariosController {
+  async novoFuncionario (req: Request, res: Response) {
     try {
-      // const { nome, telefone, email, senha, perfilUsuario, ativo, idUnidade } = req.body
-      const { nome, telefone, email, perfilUsuario, ativo, cpf, idUnidade } = req.body
+      const { nome, telefone, email, perfilFuncionario, ativo, cpf } = req.body
 
       const senha = gerarSenha.gerarNovaSenha(5)
 
-      const usuario = await prisma.usuarios.create({
+      const funcionario = await prisma.funcionarios.create({
         data:{
           nome,
           telefone,
           email,
           senha: bcrypt.hashSync(senha, 8),
-          perfilUsuario,
+          perfilFuncionario,
           ativo,
-          cpf: cpf.replace(/\D/g, ''),
+          cpf: cpf ? cpf.replace(/\D/g, '') : null,
         }
       })
 
-      return res.status(200).json({ usuario, senha })
+      return res.status(200).json({ funcionario, senha })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
     }
   }
 
-  async getUsuarioLogado (req: Request, res: Response) {
+  async getFuncionarioLogado (req: Request, res: Response) {
     try {
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
 
       verify(token, process.env.JWT_TOKEN, async (error, headerToken:JWTHeader) => {
         if (error) {
-          return res.status(401).send({ message: 'Usuário não encontrado' })
+          return res.status(401).send({ message: 'Funcionário não encontrado' })
         }
 
-        const idUsuario = headerToken.userId.toString()
-        const usuario = await prisma.usuarios.findFirst({
-          where:{ id: idUsuario },
+        const idFuncionario = headerToken.userId.toString()
+        const funcionario = await prisma.funcionarios.findFirst({
+          where:{ id: idFuncionario },
           include: { Unidades: true}
         })
 
-        delete usuario.senha
+        delete funcionario.senha
 
-        return res.status(200).json(usuario)
+        return res.status(200).json(funcionario)
       })
 
 
@@ -62,29 +61,29 @@ class UsuariosController {
     }
   }
 
-  async buscarUsuario (req: Request, res: Response) {
+  async buscarFuncionario (req: Request, res: Response) {
     try {
-      const { idUsuario } = req.params
+      const { idFuncionario } = req.params
 
-      const usuario = await prisma.usuarios.findFirst({
-        where:{ id: idUsuario },
+      const funcionario = await prisma.funcionarios.findFirst({
+        where:{ id: idFuncionario },
         include: { Unidades: true}
       })
 
-      delete usuario.senha
+      delete funcionario.senha
 
-      return res.status(200).json( usuario )
+      return res.status(200).json( funcionario )
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
     }
   }
 
-  async getUsuariosUnidade (req: Request, res: Response) {
+  async getFuncionariosUnidade (req: Request, res: Response) {
     try {
       const { idUnidade } = req.query
 
-      const usuarios = await prisma.usuarios.findMany({
+      const funcionarios = await prisma.funcionarios.findMany({
         where:{ unidadesId: Number(idUnidade) },
         orderBy: [
           {
@@ -93,20 +92,20 @@ class UsuariosController {
         ],
       })
 
-      return res.status(200).json({ usuarios })
+      return res.status(200).json(funcionarios)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
     }
   }
 
-  async pesquisarUsuarios (req: Request, res: Response) {
+  async pesquisarFuncionarios (req: Request, res: Response) {
     try {
       const { pagina, porPagina, unidade, nome, email, ativo, cpf} = req.query
 
       const filtroAtivos = ativo ? ativo === 'true' : undefined
 
-      const completo = await prisma.usuarios.findMany({
+      const completo = await prisma.funcionarios.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           cpf: cpf ? {equals: cpf.toString().replace(/\D/g, '')} : undefined,
@@ -115,7 +114,7 @@ class UsuariosController {
           ativo: ativo ? Boolean(ativo) : undefined
         }})
 
-      const usuarios = await prisma.usuarios.findMany({
+      const funcionarios = await prisma.funcionarios.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           cpf: cpf ? {equals: cpf.toString().replace(/\D/g, '')} : undefined,
@@ -132,18 +131,18 @@ class UsuariosController {
         ],
       })
 
-      return res.status(200).json({ usuarios, total: completo.length, paginas: Math.ceil(completo.length/Number(porPagina)) })
+      return res.status(200).json({ funcionarios, total: completo.length, paginas: Math.ceil(completo.length/Number(porPagina)) })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
     }
   }
 
-  async getListaUsuarios (req: Request, res: Response) {
+  async getListaFuncionarios (req: Request, res: Response) {
     try {
       const { idUnidade } = req.query
 
-      const usuarios = await prisma.usuarios.findMany({
+      const funcionarios = await prisma.funcionarios.findMany({
         where:{ unidadesId: { not: Number(idUnidade) }},
         include: { Unidades: true},
         orderBy: [
@@ -153,37 +152,37 @@ class UsuariosController {
         ],
       })
 
-      return res.status(200).json({ usuarios })
+      return res.status(200).json(funcionarios)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
     }
   }
 
-  async editarUsuario (req: Request, res: Response) {
-    console.log('Editando usuário...')
+  async editarFuncionario (req: Request, res: Response) {
+    console.log('Editando funcionário...')
     try {
-      const { nome, telefone, email, perfilUsuario, ativo, cpf } = req.body
-      const { idUsuario } = req.params
+      const { nome, telefone, email, perfilFuncionario, ativo, cpf } = req.body
+      const { idFuncionario } = req.params
 
-      const usuario = await prisma.usuarios.update({
-        where: {id: idUsuario.toString()},
+      const funcionario = await prisma.funcionarios.update({
+        where: {id: idFuncionario.toString()},
         data:{
           nome,
           telefone: telefone.replace(/\D/g, ''),
           email,
-          perfilUsuario,
+          perfilFuncionario,
           ativo,
           cpf: cpf.replace(/\D/g, ''),
         }
       })
-      console.log('Usuário:')
-      console.log(usuario)
+      console.log('Funcionário:')
+      console.log(funcionario)
       console.log('----------------------')
 
-      delete usuario.senha
+      delete funcionario.senha
 
-      return res.status(200).json({ usuario })
+      return res.status(200).json({ funcionario })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
@@ -192,24 +191,24 @@ class UsuariosController {
 
   async atualizarSenha (req: Request, res: Response) {
     const { senhaAtual, novaSenha } = req.body
-    const { idUsuario } = req.params
+    const { idFuncionario } = req.params
 
     try {
-      const usuario = await prisma.usuarios.findFirst({where:{id: idUsuario.toString()}})
-      const validatePass = await bcrypt.compare(senhaAtual, usuario.senha)
+      const funcionario = await prisma.funcionarios.findFirst({where:{id: idFuncionario.toString()}})
+      const validatePass = await bcrypt.compare(senhaAtual, funcionario.senha)
 
       if (!validatePass) {
         return res.status(401).send({ message: 'Usuário ou senha inválidos!' })
       }
 
-      await prisma.usuarios.update({
-        where: {id: idUsuario.toString()},
+      await prisma.funcionarios.update({
+        where: {id: idFuncionario.toString()},
         data:{ senha:  bcrypt.hashSync(novaSenha, 8), senhaTemp: false}
       })
 
-      delete usuario.senha
+      delete funcionario.senha
 
-      return res.status(200).send(usuario)
+      return res.status(200).send(funcionario)
 
     } catch (error) {
       console.error(error)
@@ -218,13 +217,13 @@ class UsuariosController {
   }
 
   async resetarSenha (req: Request, res: Response) {
-    const { idUsuario } = req.params
+    const { idFuncionario } = req.params
 
     try {
       const novaSenha = gerarSenha.gerarNovaSenha(5)
 
-      await prisma.usuarios.update({
-        where: {id: idUsuario.toString()},
+      await prisma.funcionarios.update({
+        where: {id: idFuncionario.toString()},
         data:{ senha: bcrypt.hashSync(novaSenha, 8) }
       })
 
@@ -236,4 +235,4 @@ class UsuariosController {
   }
 }
 
-export default new UsuariosController()
+export default new FuncionariosController()

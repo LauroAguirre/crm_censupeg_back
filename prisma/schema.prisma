@@ -8,34 +8,34 @@ datasource db {
 }
 
 model Candidatos {
-  id                  String    @id @default(uuid()) @map("id_candidato")
-  dtCadastro          DateTime  @default(now()) @map("dt_cadastro")
-  nome                String
-  email               String
-  fone1               String
-  fone2               String?
-  cpf                 String?
-  dtNascimento        DateTime? @map("dt_nascimento")
-  escolaridade        Int?
-  formacao            String?
-  cursoAtual          String?   @map("curso_atuao")
-  cidade              String
-  uf                  String
-  alunoCensupeg       Boolean   @default(false) @map("aluno_censupeg")
-  outrasInfos         String?   @map("outras_infos")
-  dtUltContato        DateTime? @map("dt_ultimo_contato")
-  usuarioCad          Usuarios? @relation("usuarioCadCandidato", fields: [idUsuarioCad], references: [id])
-  idUsuarioCad        String?   @map("id_usuario_cadastro")
-  usuarioUltContato   Usuarios? @relation("usuarioUltContatoCandidato", fields: [idUsuarioUltContato], references: [id])
-  idUsuarioUltContato String?   @map("id_usuario_ultimo_contato")
-  sexo                String
-  contatoMatutino     Boolean   @default(false) @map("contato_matutino")
-  contatoVespertino   Boolean   @default(false) @map("contato_vespertino")
-  contatoNoturno      Boolean   @default(false) @map("contato_noturno")
-  interessePos        Boolean   @default(false) @map("interesse_pos")
-  interesseGraduacao  Boolean   @default(false) @map("interesse_graduacao")
-  interessePresencial Boolean   @default(false) @map("interesse_presencial")
-  interesseEad        Boolean   @default(false) @map("interesse_ead")
+  id                      String        @id @default(uuid()) @map("id_candidato")
+  dtCadastro              DateTime      @default(now()) @map("dt_cadastro")
+  nome                    String
+  email                   String
+  fone1                   String
+  fone2                   String?
+  cpf                     String?
+  dtNascimento            DateTime?     @map("dt_nascimento")
+  escolaridade            Int?
+  formacao                String?
+  cursoAtual              String?       @map("curso_atuao")
+  cidade                  String
+  uf                      String
+  alunoCensupeg           Boolean       @default(false) @map("aluno_censupeg")
+  outrasInfos             String?       @map("outras_infos")
+  dtUltContato            DateTime?     @map("dt_ultimo_contato")
+  sexo                    String?
+  contatoMatutino         Boolean       @default(false) @map("contato_matutino")
+  contatoVespertino       Boolean       @default(false) @map("contato_vespertino")
+  contatoNoturno          Boolean       @default(false) @map("contato_noturno")
+  interessePos            Boolean       @default(false) @map("interesse_pos")
+  interesseGraduacao      Boolean       @default(false) @map("interesse_graduacao")
+  interessePresencial     Boolean       @default(false) @map("interesse_presencial")
+  interesseEad            Boolean       @default(false) @map("interesse_ead")
+  funcionarioCad          Funcionarios? @relation("funcionarioCadCandidato", fields: [idFuncionarioCad], references: [id])
+  idFuncionarioCad        String?       @map("id_funcionario_cadastro")
+  funcionarioUltContato   Funcionarios? @relation("funcionarioUltContatoCandidato", fields: [idFuncionarioUltContato], references: [id])
+  idFuncionarioUltContato String?       @map("id_funcionario_ultimo_contato")
 
   @@map("candidatos")
 }
@@ -64,43 +64,46 @@ model CursosEmUnidades {
 
 
   @@id([idCurso, idUnidade])
+  @@map("cursos_unidades")
 }
 
 model Empresas {
-  id                  String    @id @default(uuid()) @map("id_empresa")
-  nome                String
-  razaoSocial         String?   @map("razao_social")
-  cnpj                String?
-  nomeContato         String    @map("nome_contato")
-  emailContato        String?   @map("email_contato")
-  foneContato         String?   @map("fone_contato")
-  foneContato2        String?   @map("fone_contato_2")
-  situacao            Int
-  outraSituacao       String?   @map("outra_situacao")
-  cep                 String?
-  logradouro          String?
-  numero              String?
-  complemento         String?
-  bairro              String?
-  cidade              String?
-  uf                  String?
-  outrasInfos         String?   @map("outras_infos")
-  usuarioCad          Usuarios  @relation("usuarioCadEmpresa", fields: [idUsuarioCad], references: [id])
-  idUsuarioCad        String    @map("id_usuario_cad")
-  dtUltContato        DateTime? @map("dt_ultimo_contato")
-  usuarioUltContato   Usuarios? @relation("usuarioUltContatoEmpresa", fields: [idUsuarioUltContato], references: [id])
-  idUsuarioUltContato String?   @map("id_usuario_ultimo_contato")
+  id                      String        @id @default(uuid()) @map("id_empresa")
+  nome                    String
+  razaoSocial             String?       @map("razao_social")
+  cnpj                    String?
+  nomeContato             String        @map("nome_contato")
+  emailContato            String?       @map("email_contato")
+  foneContato             String?       @map("fone_contato")
+  foneContato2            String?       @map("fone_contato_2")
+  situacao                Int
+  outraSituacao           String?       @map("outra_situacao")
+  cep                     String?
+  logradouro              String?
+  numero                  String?
+  complemento             String?
+  bairro                  String?
+  cidade                  String?
+  uf                      String?
+  outrasInfos             String?       @map("outras_infos")
+  funcionarioCad          Funcionarios  @relation("funcionarioCadEmpresa", fields: [idFuncionarioCad], references: [id])
+  idFuncionarioCad        String        @map("id_funcionario_cad")
+  funcionarioUltContato   Funcionarios? @relation("funcionarioUltContatoEmpresa", fields: [idFuncionarioUltContato], references: [id])
+  idFuncionarioUltContato String?       @map("id_funcionario_ultimo_contato")
+  dtUltContato            DateTime?     @map("dt_ultimo_contato")
 
   @@map("empresas")
 }
 
 model RefreshKeys {
-  id          String   @id @default(uuid())
-  dtExpiracao DateTime @map("dt_expiracao")
-  tokenAtual  String   @map("token_atual")
-  usuario     Usuarios @relation(fields: [idUsuario], references: [id])
-  idUsuario   String   @map("id_usuario")
-  ipOrigem    String?  @map("ip_origem")
+  id            String       @id @default(uuid())
+  dtExpiracao   DateTime     @map("dt_expiracao")
+  tokenAtual    String       @map("token_atual")
+  funcionario   Funcionarios @relation("funcionarioRefreshKey", fields: [idFuncionario], references: [id])
+  idFuncionario String       @map("id_funcionario")
+  ipOrigem      String?      @map("ip_origem")
+
+  @@map("refresh_keys")
 }
 
 model Unidades {
@@ -113,11 +116,13 @@ model Unidades {
   bairro           String
   cidade           String
   uf               String
-  usuarios         Usuarios[]
+  funcionarios     Funcionarios[]
   CursosEmUnidades CursosEmUnidades[]
+
+  @@map("unidades")
 }
 
-model Usuarios {
+model Funcionarios {
   id                    String        @id @default(uuid())
   dtCadastro            DateTime      @default(now()) @map("dt_cadastro")
   dtAtualizacao         DateTime      @updatedAt @map("dt_atualizacao")
@@ -127,13 +132,16 @@ model Usuarios {
   email                 String        @db.VarChar(120)
   senha                 String        @db.VarChar(80)
   senhaTemp             Boolean       @default(true) @map("senha_temp")
-  perfilUsuario         Int           @map("perfil_usuario")
+  perfilFuncionario     Int           @map("perfil_funcionario")
   ativo                 Boolean       @default(true)
-  RefreshKeys           RefreshKeys[]
   Unidades              Unidades?     @relation(fields: [unidadesId], references: [id])
   unidadesId            Int?          @map("id_unidade")
-  candidatosCadastrados Candidatos[]  @relation("usuarioCadCandidato")
-  ultContatoCandidato   Candidatos[]  @relation("usuarioUltContatoCandidato")
-  empresasCadastradas   Empresas[]    @relation("usuarioCadEmpresa")
-  ultContatoEmpresa     Empresas[]    @relation("usuarioUltContatoEmpresa")
+  candidatosCadastrados Candidatos[]  @relation("funcionarioCadCandidato")
+  ultContatoCandidato   Candidatos[]  @relation("funcionarioUltContatoCandidato")
+  empresasCadastradas   Empresas[]    @relation("funcionarioCadEmpresa")
+  ultContatoEmpresa     Empresas[]    @relation("funcionarioUltContatoEmpresa")
+  RefreshKeys           RefreshKeys[] @relation("funcionarioRefreshKey")
+
+
+  @@map("funcionarios")
 }

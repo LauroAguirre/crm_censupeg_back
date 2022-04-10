@@ -14,18 +14,18 @@ class AutenticacaoController {
       const { email, senha } = req.body
       const ipOrigem = requestIp.getClientIp(req)
 
-      const usuario = await prisma.usuarios.findFirst({
+      const funcionario = await prisma.funcionarios.findFirst({
         where:{email},
         include: { Unidades: true}})
       console.log('Usuário:')
-      console.log(usuario)
+      console.log(funcionario)
       console.log('----------------------')
 
-      if (!usuario || usuario.ativo === false) {
+      if (!funcionario || funcionario.ativo === false) {
         return res.status(401).send({ message: 'Usuário não encontrado!' })
       }
 
-      const validatePass = await bcrypt.compare(senha, usuario.senha)
+      const validatePass = await bcrypt.compare(senha, funcionario.senha)
 
       if (!validatePass) {
         console.log('senha inválida')
@@ -33,15 +33,15 @@ class AutenticacaoController {
       }
 
       const infosToken = {
-        userId: usuario.id,
-        email: usuario.email,
-        perfil: usuario.perfilUsuario
+        userId: funcionario.id,
+        email: funcionario.email,
+        perfil: funcionario.perfilFuncionario
       }
 
       const jwt = sign(infosToken, process.env.JWT_TOKEN)
-      const refreshTk = await criarRefreshTk.createRefresh(usuario.id, jwt, ipOrigem)
+      const refreshTk = await criarRefreshTk.createRefresh(funcionario.id, jwt, ipOrigem)
 
-      return res.status(200).json({ usuario, jwt, refreshTk })
+      return res.status(200).json({ funcionario, jwt, refreshTk })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)

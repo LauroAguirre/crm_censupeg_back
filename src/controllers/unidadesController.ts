@@ -49,7 +49,7 @@ class UnidadesController {
 
       const unidade = await prisma.unidades.findFirst({
         where:{ id: Number(idUnidade) },
-        include:{ usuarios:true }
+        include:{ funcionarios:true }
       })
 
       return res.status(200).json({ unidade })
@@ -123,49 +123,49 @@ class UnidadesController {
     }
   }
 
-  async vincularUsuario (req: Request, res: Response) {
-    console.log('iniciando a vincular usuário..')
+  async vincularFuncionario (req: Request, res: Response) {
+    console.log('iniciando a vincular funcionário..')
     try {
-      const { idUsuario } = req.body
+      const { idFuncionario } = req.body
       const { idUnidade } = req.params
 
       await prisma.unidades.update({
         where: { id: Number(idUnidade) },
         data: {
-          usuarios: {
+          funcionarios: {
             connect: {
-              id: idUsuario,
+              id: idFuncionario,
             }
           }
         }
       })
 
-      const usuario = await prisma.usuarios.findFirst({ where:{ id: idUsuario }})
+      const funcionario = await prisma.funcionarios.findFirst({ where:{ id: idFuncionario }})
 
-      return res.status(200).json({ usuario })
+      return res.status(200).json(funcionario)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
     }
   }
 
-  async removerUsuario (req: Request, res: Response) {
+  async removerFuncionario (req: Request, res: Response) {
     try {
-      const { idUsuario } = req.body
+      const { idFuncionario } = req.body
       const { idUnidade } = req.params
 
       await prisma.unidades.update({
         where: { id: Number(idUnidade) },
         data: {
-          usuarios: {
+          funcionarios: {
             disconnect: {
-              id: idUsuario,
+              id: idFuncionario,
             }
           }
         }
       })
 
-      const unidade = await prisma.unidades.findFirst({ where:{ id: Number(idUnidade) }, include: {usuarios: true}})
+      const unidade = await prisma.unidades.findFirst({ where:{ id: Number(idUnidade) }, include: {funcionarios: true}})
 
       return res.status(200).json({ unidade })
     } catch (error) {

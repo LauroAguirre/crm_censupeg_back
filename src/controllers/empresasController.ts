@@ -1,7 +1,5 @@
 import { Request, Response } from 'express'
-import { PrismaClient, Usuarios } from '@prisma/client'
-import bcrypt from 'bcryptjs'
-import gerarSenha from 'src/providers/gerarSenha'
+import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
 import { JWTHeader } from 'src/providers/JWTHeader'
 import dayjs from 'dayjs'
@@ -23,7 +21,7 @@ class EmpresasController {
           }
 
           const idUsuario = headerToken.userId.toString()
-          const usuario = await prisma.usuarios.findFirst({
+          const usuario = await prisma.funcionarios.findFirst({
             where:{ id: idUsuario }
           })
 
@@ -46,12 +44,12 @@ class EmpresasController {
             uf,
             outrasInfos,
             dtUltContato: new Date(),
-            usuarioCad: {
+            funcionarioCad: {
               connect:  {
                 id: usuario.id,
               }
             },
-            usuarioUltContato: {
+            funcionarioUltContato: {
               connect:  {
                 id: usuario.id,
               }

@@ -9,8 +9,8 @@ router.get('/pesquisarUnidades', authMiddleware, unidadesController.pesquisarUni
 router.get('/getListaUnidades', authMiddleware, unidadesController.getListaUnidades)
 
 router.put('/unidades/:idUnidade/editarUnidade', authMiddleware, unidadesController.editarUnidade)
-router.put('/unidades/:idUnidade/vincularUsuario', authMiddleware, unidadesController.vincularUsuario)
-router.put('/unidades/:idUnidade/removerUsuario', authMiddleware, unidadesController.removerUsuario)
+router.put('/unidades/:idUnidade/vincularFuncionario', authMiddleware, unidadesController.vincularFuncionario)
+router.put('/unidades/:idUnidade/removerFuncionario', authMiddleware, unidadesController.removerFuncionario)
 
 router.post('/unidades/novo', authMiddleware, unidadesController.novaUnidade)
 
