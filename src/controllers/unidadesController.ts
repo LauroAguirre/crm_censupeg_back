@@ -167,7 +167,7 @@ class UnidadesController {
 
       const unidade = await prisma.unidades.findFirst({ where:{ id: Number(idUnidade) }, include: {funcionarios: true}})
 
-      return res.status(200).json({ unidade })
+      return res.status(200).json(unidade)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)

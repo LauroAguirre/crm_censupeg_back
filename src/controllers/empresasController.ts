@@ -20,9 +20,9 @@ class EmpresasController {
             return res.status(401).send({ message: 'Usuário não encontrado' })
           }
 
-          const idUsuario = headerToken.userId.toString()
-          const usuario = await prisma.funcionarios.findFirst({
-            where:{ id: idUsuario }
+          const idFuncionario = headerToken.userId.toString()
+          const funcionario = await prisma.funcionarios.findFirst({
+            where:{ id: idFuncionario }
           })
 
           const empresa = await prisma.empresas.create({ data:{
@@ -46,12 +46,12 @@ class EmpresasController {
             dtUltContato: new Date(),
             funcionarioCad: {
               connect:  {
-                id: usuario.id,
+                id: funcionario.id,
               }
             },
             funcionarioUltContato: {
               connect:  {
-                id: usuario.id,
+                id: funcionario.id,
               }
             }
           }})
@@ -165,10 +165,10 @@ class EmpresasController {
     console.log('Editando usuário...')
     try {
       const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, situacao, outrasInfos } = req.body
-      const { idUsuario } = req.params
+      const { idFuncionario } = req.params
 
       const empresa = await prisma.empresas.update({
-        where: {id: idUsuario.toString()},
+        where: {id: idFuncionario.toString()},
         data:{
           nome,
           razaoSocial,

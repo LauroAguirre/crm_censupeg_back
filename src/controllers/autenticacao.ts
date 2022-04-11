@@ -14,10 +14,12 @@ class AutenticacaoController {
       const { email, senha } = req.body
       const ipOrigem = requestIp.getClientIp(req)
 
+      console.log(req.body)
+
       const funcionario = await prisma.funcionarios.findFirst({
         where:{email},
         include: { Unidades: true}})
-      console.log('Usuário:')
+      console.log('Funcionario:')
       console.log(funcionario)
       console.log('----------------------')
 

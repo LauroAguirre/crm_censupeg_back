@@ -12,6 +12,7 @@ class FuncionariosController {
     try {
       const { nome, telefone, email, perfilFuncionario, ativo, cpf } = req.body
 
+      // const senha = '123'
       const senha = gerarSenha.gerarNovaSenha(5)
 
       const funcionario = await prisma.funcionarios.create({
