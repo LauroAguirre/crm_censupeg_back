@@ -50,7 +50,7 @@ export default function authMiddleware (req: Request, res: Response, next: NextF
           }
         }
 
-        if(perfil !== 1 ){
+        if(perfil !== 1 && perfil !== 2 ){
           const rotasGestor = [
             '/unidades/novo',
             '/unidades/:idUnidade/vincularFuncionario'
