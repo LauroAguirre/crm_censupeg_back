@@ -6,15 +6,13 @@ const prisma = new PrismaClient()
 class CursosController {
   async novoCurso (req: Request, res: Response) {
     try {
-      const { nome, modalidade, tipo, valor, duracao, link, infosAdicionais } = req.body
+      const { nome, modalidade, tipo, link, infosAdicionais } = req.body
 
 
           const curso = await prisma.cursos.create({ data:{
             nome,
             modalidade,
             tipo,
-            valor,
-            duracao,
             link,
             infosAdicionais,
           }})
@@ -48,15 +46,13 @@ class CursosController {
 
   async pesquisarCurso (req: Request, res: Response) {
     try {
-      const { pagina, porPagina, nome, modalidade, tipo, valor, duracao} = req.query
+      const { pagina, porPagina, nome, modalidade, tipo } = req.query
 
       const completo = await prisma.cursos.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           modalidade: modalidade ? Number(modalidade) : undefined,
           tipo: tipo ? Number(tipo) : undefined,
-          valor: valor ? Number(valor) : undefined,
-          duracao: duracao ? {contains: duracao.toString(), mode: 'insensitive'} : undefined,
         }})
 
       const cursos = await prisma.cursos.findMany({
@@ -64,11 +60,9 @@ class CursosController {
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           modalidade: modalidade ? Number(modalidade) : undefined,
           tipo: tipo ? Number(tipo) : undefined,
-          valor: valor ? Number(valor) : undefined,
-          duracao: duracao ? {contains: duracao.toString(), mode: 'insensitive'} : undefined,
         },
         take: porPagina ? Number(porPagina) : 10,
-        skip: 0,//( Number(pagina) - 1) * Number(porPagina),
+        skip: ( Number(pagina) - 1) * Number(porPagina),
         orderBy: [
           {
             nome: 'asc',
@@ -85,13 +79,9 @@ class CursosController {
     }
   }
 
-  async getListaCursosUnidade (req: Request, res: Response) {
+  async getListaCursos (req: Request, res: Response) {
     try {
-      const { idUnidade } = req.params
-
-      const funcionarios = await prisma.funcionarios.findMany({
-        where:{ unidadesId: { not: Number(idUnidade) }},
-        include: { Unidades: true},
+      const cursos = await prisma.cursos.findMany({
         orderBy: [
           {
             nome: 'asc',
@@ -99,7 +89,7 @@ class CursosController {
         ],
       })
 
-      return res.status(200).json(funcionarios)
+      return res.status(200).json(cursos)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
@@ -108,7 +98,7 @@ class CursosController {
 
   async editarCurso (req: Request, res: Response) {
     try {
-      const { nome, modalidade, tipo, valor, duracao, link, infosAdicionais } = req.body
+      const { nome, modalidade, tipo, link, infosAdicionais } = req.body
       const { idCurso } = req.params
 
       const curso = await prisma.cursos.update({
@@ -117,8 +107,6 @@ class CursosController {
           nome,
           modalidade,
           tipo,
-          valor,
-          duracao,
           link,
           infosAdicionais
         }

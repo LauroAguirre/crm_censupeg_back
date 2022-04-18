@@ -6,7 +6,7 @@ const router = Router()
 
 router.get('/cursos/:idCurso', authMiddleware, cursosController.buscarCurso)
 router.get('/pesquisarCursos', authMiddleware, cursosController.pesquisarCurso)
-router.get('/getListaCursos/:idUnidade', authMiddleware, cursosController.getListaCursosUnidade)
+router.get('/getListaCursos', authMiddleware, cursosController.getListaCursos)
 
 
 router.put('/cursos/:idCurso/editar', authMiddleware, cursosController.editarCurso)

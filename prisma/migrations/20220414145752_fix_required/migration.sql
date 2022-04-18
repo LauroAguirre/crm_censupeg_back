@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "candidatos" ALTER COLUMN "cidade" DROP NOT NULL,
+ALTER COLUMN "uf" DROP NOT NULL;
