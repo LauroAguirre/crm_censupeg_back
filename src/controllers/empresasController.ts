@@ -86,44 +86,46 @@ class EmpresasController {
 
   async pesquisarEmpresa (req: Request, res: Response) {
     try {
-      const { pagina, porPagina, nome, cnpj, nomeContato, emailContato, foneContato, cpfContato,
-        situacao, dtPeriodoContatoInicio, dtPeriodoContatoFim
-      } = req.query
+      const { pagina, porPagina, nome, cnpj, nomeContato, emailContato, foneContato, cpfContato } = req.query
 
-      const inicioPeriodo = dtPeriodoContatoInicio ? dayjs(dtPeriodoContatoInicio.toString()).format('YYYY-DD-MM') : undefined
-      const dtContatoFim = dtPeriodoContatoFim ? dayjs(dtPeriodoContatoFim.toString()).format('YYYY-DD-MM') : undefined
+      console.log(req.query)
+
+      // const inicioPeriodo = dtPeriodoContatoInicio ? dayjs(dtPeriodoContatoInicio.toString()).format('YYYY-DD-MM') : undefined
+      // const dtContatoFim = dtPeriodoContatoFim ? dayjs(dtPeriodoContatoFim.toString()).format('YYYY-DD-MM') : undefined
 
       const completo = await prisma.empresas.findMany({
         where:{
-          nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
-          razaoSocial: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
+          OR: [
+            {nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
+            {razaoSocial: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
+            {foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined},
+            {foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined},
+          ],
           cnpj: cnpj ? {contains: cnpj.toString().replace(/\D/g, '')} : undefined,
           nomeContato: nomeContato ? {contains: nomeContato.toString(), mode: 'insensitive'} : undefined,
           emailContato: emailContato ? {contains: emailContato.toString(), mode: 'insensitive'} : undefined,
           cpfContato: cpfContato ? {contains: cpfContato.toString().replace(/\D/g, '')} : undefined,
-          foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
-          foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
-          situacao: situacao ? Number(situacao) : undefined,
-          dtUltContato: {
-            gte: inicioPeriodo,
-            lt: dtContatoFim
-          },
+          // dtUltContato: {
+          //   gte: inicioPeriodo,
+          //   lt: dtContatoFim
+          // },
         }})
 
       const empresas = await prisma.empresas.findMany({
         where:{
-          nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
-          razaoSocial: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
+          OR: [
+            {nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
+            {razaoSocial: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
+            {foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined},
+            {foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined},
+          ],
           cnpj: cnpj ? {contains: cnpj.toString().replace(/\D/g, '')} : undefined,
           nomeContato: nomeContato ? {contains: nomeContato.toString(), mode: 'insensitive'} : undefined,
           emailContato: emailContato ? {contains: emailContato.toString(), mode: 'insensitive'} : undefined,
-          foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
-          foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
-          situacao: situacao ? Number(situacao) : undefined,
-          dtUltContato: {
-            gte: inicioPeriodo,
-            lt: dtContatoFim
-          },
+          // dtUltContato: {
+          //   gte: inicioPeriodo,
+          //   lt: dtContatoFim
+          // },
         },
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),
