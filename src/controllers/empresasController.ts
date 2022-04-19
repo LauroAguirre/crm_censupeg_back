@@ -9,7 +9,7 @@ const prisma = new PrismaClient()
 class EmpresasController {
   async novaEmpresa (req: Request, res: Response) {
     try {
-      const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, situacao,
+      const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, cpfContato, situacao,
         cep, logradouro, numero, complemento, bairro, cidade, uf, outraSituacao, outrasInfos } = req.body
 
         const authHeader = req.headers.authorization
@@ -33,6 +33,7 @@ class EmpresasController {
             emailContato,
             foneContato: foneContato.replace(/\D/g, ''),
             foneContato2: foneContato2 ? foneContato2.replace(/\D/g, '') : null,
+            cpfContato: cpfContato ? cpfContato.replace(/\D/g, '') : null,
             situacao,
             outraSituacao,
             cep: cep ? cep.replace(/\D/g, '') : null,
@@ -85,7 +86,9 @@ class EmpresasController {
 
   async pesquisarEmpresa (req: Request, res: Response) {
     try {
-      const { pagina, porPagina, nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, situacao, dtPeriodoContatoInicio, dtPeriodoContatoFim} = req.query
+      const { pagina, porPagina, nome, cnpj, nomeContato, emailContato, foneContato, cpfContato,
+        situacao, dtPeriodoContatoInicio, dtPeriodoContatoFim
+      } = req.query
 
       const inicioPeriodo = dtPeriodoContatoInicio ? dayjs(dtPeriodoContatoInicio.toString()).format('YYYY-DD-MM') : undefined
       const dtContatoFim = dtPeriodoContatoFim ? dayjs(dtPeriodoContatoFim.toString()).format('YYYY-DD-MM') : undefined
@@ -93,10 +96,11 @@ class EmpresasController {
       const completo = await prisma.empresas.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
-          razaoSocial: razaoSocial ? {contains: razaoSocial.toString(), mode: 'insensitive'} : undefined,
+          razaoSocial: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           cnpj: cnpj ? {contains: cnpj.toString().replace(/\D/g, '')} : undefined,
           nomeContato: nomeContato ? {contains: nomeContato.toString(), mode: 'insensitive'} : undefined,
           emailContato: emailContato ? {contains: emailContato.toString(), mode: 'insensitive'} : undefined,
+          cpfContato: cpfContato ? {contains: cpfContato.toString().replace(/\D/g, '')} : undefined,
           foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
           foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined,
           situacao: situacao ? Number(situacao) : undefined,
@@ -109,7 +113,7 @@ class EmpresasController {
       const empresas = await prisma.empresas.findMany({
         where:{
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
-          razaoSocial: razaoSocial ? {contains: razaoSocial.toString(), mode: 'insensitive'} : undefined,
+          razaoSocial: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           cnpj: cnpj ? {contains: cnpj.toString().replace(/\D/g, '')} : undefined,
           nomeContato: nomeContato ? {contains: nomeContato.toString(), mode: 'insensitive'} : undefined,
           emailContato: emailContato ? {contains: emailContato.toString(), mode: 'insensitive'} : undefined,
@@ -164,21 +168,31 @@ class EmpresasController {
   async editarEmpresa (req: Request, res: Response) {
     console.log('Editando usuário...')
     try {
-      const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, situacao, outrasInfos } = req.body
-      const { idFuncionario } = req.params
+      const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, cpfContato, situacao,
+        cep, logradouro, numero, complemento, bairro, cidade, uf, outraSituacao, outrasInfos } = req.body
+      const { idEmpresa } = req.params
 
       const empresa = await prisma.empresas.update({
-        where: {id: idFuncionario.toString()},
+        where: {id: idEmpresa.toString()},
         data:{
           nome,
           razaoSocial,
-            cnpj: cnpj.replace(/\D/g, ''),
-            nomeContato,
-            emailContato,
-            foneContato: foneContato.replace(/\D/g, ''),
-            foneContato2: foneContato2.replace(/\D/g, ''),
-            situacao,
-            outrasInfos
+          cnpj: cnpj.replace(/\D/g, ''),
+          nomeContato,
+          emailContato,
+          cpfContato: cpfContato ? cpfContato.replace(/\D/g, '') : null,
+          foneContato: foneContato ? foneContato.replace(/\D/g, '') : null,
+          foneContato2: foneContato2 ? foneContato2.replace(/\D/g, '') : null,
+          situacao,
+          outraSituacao,
+          cep: cep ? cep.replace(/\D/g, '') : null,
+          logradouro,
+          numero,
+          complemento,
+          bairro,
+          cidade,
+          uf,
+          outrasInfos
         }
       })
       console.log('Empresa:')

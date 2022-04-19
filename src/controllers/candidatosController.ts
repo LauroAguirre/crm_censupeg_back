@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
 import { JWTHeader } from 'src/providers/JWTHeader'
 import dayjs from 'dayjs'
-import { connect } from 'http2'
 
 const prisma = new PrismaClient()
 class CandidatosController {
@@ -97,8 +96,9 @@ class CandidatosController {
 
   async pesquisarCandidato (req: Request, res: Response) {
     try {
+      console.log(req.query)
       const { pagina, porPagina, nome, email, fone, cpf, dtNascimentoInicio, dtNascimentoFim,
-        escolaridade, cursoAtual, cidade, uf, alunoCensupeg} = req.query
+        escolaridade, curso, cidade, uf, alunoCensupeg} = req.query
 
         const dtAniversarioInicio = dtNascimentoInicio ? dayjs(dtNascimentoInicio.toString()) : undefined
         const dtAniversarioFim = dtNascimentoFim ? dayjs(dtNascimentoInicio.toString()) : dtNascimentoInicio ? dayjs(dtNascimentoInicio.toString()) : undefined
@@ -111,7 +111,15 @@ class CandidatosController {
           fone2: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           cpf: cpf ? {contains: cpf.toString().replace(/\D/g, '')} : undefined,
           escolaridade: escolaridade ? Number(escolaridade) : null,
-          cursoAtual: cursoAtual ? {contains: cursoAtual.toString(), mode: 'insensitive'} : undefined,
+          cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined,
+          outrosCursosInteresse: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined,
+          cursosInteresse: curso ? {
+            every: {
+              curso: {
+                nome: { contains: curso.toString(), mode: 'insensitive' }
+              }
+            }
+          } : undefined,
           cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
           uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
           dtNascimento: {
@@ -129,7 +137,7 @@ class CandidatosController {
           fone2: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           cpf: cpf ? {contains: cpf.toString().replace(/\D/g, '')} : undefined,
           escolaridade: escolaridade ? Number(escolaridade) : null,
-          cursoAtual: cursoAtual ? {contains: cursoAtual.toString(), mode: 'insensitive'} : undefined,
+          cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined,
           cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
           uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
           dtNascimento: {
@@ -138,6 +146,7 @@ class CandidatosController {
           },
           alunoCensupeg: alunoCensupeg ? Boolean(alunoCensupeg) : undefined
         },
+        include: {cursosInteresse: true},
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),
         orderBy: [
@@ -156,14 +165,15 @@ class CandidatosController {
 
   async editarCandidato (req: Request, res: Response) {
     console.log('Editando candidato...')
+    console.log(req.body)
     try {
       const { alunoCensupeg, cidade, cpf, cursoAtual, cursosInteresse, dtNascimento,
-        email, escolaridade, fone1, fone2, formacao, formato,nivel, nome,
+        email, escolaridade, fone1, fone2, formacao, formato, nivel, nome,
         outrosCursosInteresse, outrasInfos, periodos, sexo, uf } = req.body
-      const { idFuncionario } = req.params
+      const { idCandidato } = req.params
 
       const candidato = await prisma.candidatos.update({
-        where: {id: idFuncionario.toString()},
+        where: {id: idCandidato.toString()},
         data:{
           nome,
           email,
@@ -190,9 +200,56 @@ class CandidatosController {
           interesseEad: formato ? formato.findIndex((per: string) => per === 'EAD') > -1 : false,
           interesseHibrido: formato ? formato.findIndex((per: string) => per === 'Híbrido') > -1 : false,
           cursosInteresse: {
-            create: cursosInteresse?.map((curso: number) => ({ idCurso: curso })),
-          },
-        }
+            connectOrCreate: cursosInteresse.map((curso: number) => {
+                return {
+                  where: {
+                    idCurso_idCandidato: {
+                      idCurso: curso,
+                      idCandidato: idCandidato.toString()
+                    }
+                  },
+                  create: {
+                    // idCurso_idCandidato: {
+                      idCurso: curso,
+                      // idCandidato: idCandidato.toString()
+                    // }
+                  },
+                };
+            }),
+        },
+          // cursosInteresse: {
+          //   connectOrCreate: cursosInteresse.map((curso: number) => {
+          //     return {
+          //       create: {
+          //         idCurso_idCandidato: {
+          //           idCurso: curso,
+          //           idCandidato: idCandidato.toString()
+          //         }
+          //       },
+          //       where: {
+          //         idCurso_idCandidato: {
+          //           idCurso: curso,
+          //           idCandidato: idCandidato.toString()
+          //         }
+          //       },
+          //     };
+          // }),
+          // // cursosInteresse: {
+          // //   connectOrCreate: {
+          // //     where: cursosInteresse?.map((curso: number) => ({idCurso_idCandidato: {idCurso: curso,idCandidato: idCandidato.toString()}})),
+          // //     create: cursosInteresse?.map((curso: number) => ({ idCurso: curso })),
+          // //   },
+          // // },
+          // // cursosInteresse: {
+          // //   create: cursosInteresse?.map((curso: number) => ({ idCurso: curso })),
+          // // },
+          // // cursosInteresse: {
+          // //   connectOrCreate: {
+          // //     where: cursosInteresse?.map((curso: number) => ({ idCurso: curso })),
+          // //     create: cursosInteresse?.map((curso: number) => ({ idCurso: curso }))
+          // //   },
+          // },
+        },
       })
 
       console.log('Candidato:')
