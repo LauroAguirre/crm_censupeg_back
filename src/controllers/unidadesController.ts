@@ -5,7 +5,7 @@ import { connect } from 'http2'
 const prisma = new PrismaClient()
 
 class UnidadesController {
-  async novaUnidade (req: Request, res: Response) {
+  async novaUnidade (req: Request, res: Response): Promise<Response> {
     console.log('Cadastrando nova unidade...')
     try {
       const { nome, cep, logradouro, numero, complemento, bairro, cidade, uf } = req.body
@@ -22,7 +22,7 @@ class UnidadesController {
     }
   }
 
-  async editarUnidade (req: Request, res: Response) {
+  async editarUnidade (req: Request, res: Response): Promise<Response> {
     console.log('Editando unidade...')
     try {
       const { nome, cep, logradouro, numero, complemento, bairro, cidade, uf } = req.body
@@ -43,7 +43,7 @@ class UnidadesController {
     }
   }
 
-  async buscarUnidade (req: Request, res: Response) {
+  async buscarUnidade (req: Request, res: Response): Promise<Response> {
     try {
       const { idUnidade } = req.params
 
@@ -59,7 +59,7 @@ class UnidadesController {
     }
   }
 
-  async pesquisarUnidades (req: Request, res: Response) {
+  async pesquisarUnidades (req: Request, res: Response): Promise<Response> {
     try {
       const { pagina, porPagina, nome, cep, cidade, uf  } = req.query
 
@@ -100,7 +100,7 @@ class UnidadesController {
     }
   }
 
-  async getListaUnidades (req: Request, res: Response) {
+  async getListaUnidades (req: Request, res: Response): Promise<Response> {
     try {
       const unidades = await prisma.unidades.findMany({
         orderBy: [
@@ -123,7 +123,7 @@ class UnidadesController {
     }
   }
 
-  async vincularFuncionario (req: Request, res: Response) {
+  async vincularFuncionario (req: Request, res: Response): Promise<Response> {
     console.log('iniciando a vincular funcionário..')
     try {
       const { idFuncionario } = req.body
@@ -149,7 +149,7 @@ class UnidadesController {
     }
   }
 
-  async removerFuncionario (req: Request, res: Response) {
+  async removerFuncionario (req: Request, res: Response): Promise<Response> {
     try {
       const { idFuncionario } = req.body
       const { idUnidade } = req.params

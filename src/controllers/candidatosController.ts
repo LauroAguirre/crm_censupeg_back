@@ -3,10 +3,11 @@ import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
 import { JWTHeader } from 'src/providers/JWTHeader'
 import dayjs from 'dayjs'
+import { notEqual } from 'assert'
 
 const prisma = new PrismaClient()
 class CandidatosController {
-  async novoCandidato (req: Request, res: Response) {
+  async novoCandidato (req: Request, res: Response): Promise<Response> {
     try {
       const {
         alunoCensupeg, cidade, cpf, cursoAtual, cursosInteresse, dtNascimento,
@@ -79,7 +80,7 @@ class CandidatosController {
     }
   }
 
-  async buscarCandidato (req: Request, res: Response) {
+  async buscarCandidato (req: Request, res: Response): Promise<Response> {
     try {
       const { idCandidato } = req.params
 
@@ -94,7 +95,7 @@ class CandidatosController {
     }
   }
 
-  async pesquisarCandidato (req: Request, res: Response) {
+  async pesquisarCandidato (req: Request, res: Response): Promise<Response> {
     try {
       console.log(req.query)
       const { pagina, porPagina, nome, email, fone, cpf, dtNascimentoInicio, dtNascimentoFim,
@@ -105,21 +106,24 @@ class CandidatosController {
 
       const completo = await prisma.candidatos.findMany({
         where:{
+          // OR: [
+          //   {cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
+          //   {outrosCursosInteresse: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
+          //   {cursosInteresse: curso ? {
+          //     every: {
+          //       curso: {
+          //         nome: { contains: curso.toString(), mode: 'insensitive' }
+          //       }
+          //     }
+          //   } : undefined},
+          // ],
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
           fone1: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           fone2: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           cpf: cpf ? {contains: cpf.toString().replace(/\D/g, '')} : undefined,
           escolaridade: escolaridade ? Number(escolaridade) : null,
-          cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined,
-          outrosCursosInteresse: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined,
-          cursosInteresse: curso ? {
-            every: {
-              curso: {
-                nome: { contains: curso.toString(), mode: 'insensitive' }
-              }
-            }
-          } : undefined,
+
           cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
           uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
           dtNascimento: {
@@ -131,13 +135,24 @@ class CandidatosController {
 
       const candidatos = await prisma.candidatos.findMany({
         where:{
+          // OR: [
+          //   {cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
+          //   {outrosCursosInteresse: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
+          //   {cursosInteresse: curso ? {
+          //     every: {
+          //       curso: {
+          //         nome: { contains: curso.toString(), mode: 'insensitive' }
+          //       }
+          //     }
+          //   } : undefined},
+          // ],
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
           fone1: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           fone2: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           cpf: cpf ? {contains: cpf.toString().replace(/\D/g, '')} : undefined,
           escolaridade: escolaridade ? Number(escolaridade) : null,
-          cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined,
+          // cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined,
           cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
           uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
           dtNascimento: {
@@ -163,9 +178,7 @@ class CandidatosController {
     }
   }
 
-  async editarCandidato (req: Request, res: Response) {
-    console.log('Editando candidato...')
-    console.log(req.body)
+  async editarCandidato (req: Request, res: Response): Promise<Response> {
     try {
       const { alunoCensupeg, cidade, cpf, cursoAtual, cursosInteresse, dtNascimento,
         email, escolaridade, fone1, fone2, formacao, formato, nivel, nome,
@@ -209,47 +222,18 @@ class CandidatosController {
                     }
                   },
                   create: {
-                    // idCurso_idCandidato: {
-                      idCurso: curso,
-                      // idCandidato: idCandidato.toString()
-                    // }
+                    idCurso: curso,
                   },
                 };
             }),
+            deleteMany: {
+              NOT: cursosInteresse?.map((curso: number) => ({ idCandidato: idCandidato.toString(), idCurso: curso })),
+            }
+          },
         },
-          // cursosInteresse: {
-          //   connectOrCreate: cursosInteresse.map((curso: number) => {
-          //     return {
-          //       create: {
-          //         idCurso_idCandidato: {
-          //           idCurso: curso,
-          //           idCandidato: idCandidato.toString()
-          //         }
-          //       },
-          //       where: {
-          //         idCurso_idCandidato: {
-          //           idCurso: curso,
-          //           idCandidato: idCandidato.toString()
-          //         }
-          //       },
-          //     };
-          // }),
-          // // cursosInteresse: {
-          // //   connectOrCreate: {
-          // //     where: cursosInteresse?.map((curso: number) => ({idCurso_idCandidato: {idCurso: curso,idCandidato: idCandidato.toString()}})),
-          // //     create: cursosInteresse?.map((curso: number) => ({ idCurso: curso })),
-          // //   },
-          // // },
-          // // cursosInteresse: {
-          // //   create: cursosInteresse?.map((curso: number) => ({ idCurso: curso })),
-          // // },
-          // // cursosInteresse: {
-          // //   connectOrCreate: {
-          // //     where: cursosInteresse?.map((curso: number) => ({ idCurso: curso })),
-          // //     create: cursosInteresse?.map((curso: number) => ({ idCurso: curso }))
-          // //   },
-          // },
-        },
+        include:{
+          cursosInteresse:true
+        }
       })
 
       console.log('Candidato:')
@@ -262,8 +246,6 @@ class CandidatosController {
       return res.status(500).json(error)
     }
   }
-
-
 }
 
 export default new CandidatosController()

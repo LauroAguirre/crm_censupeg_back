@@ -8,7 +8,7 @@ import criarRefreshTk from 'src/providers/criarRefreshTk'
 const prisma = new PrismaClient()
 
 class AutenticacaoController {
-  async autenticar (req: Request, res: Response) {
+  async autenticar (req: Request, res: Response): Promise<Response> {
     console.log('Iniciando a autenticação...')
     try {
       const { email, senha } = req.body

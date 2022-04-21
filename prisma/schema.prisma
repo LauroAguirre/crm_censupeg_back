@@ -7,6 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Atividades {
+  funcionario   Funcionarios @relation(fields: [idFuncionario], references: [id])
+  idFuncionario String       @map("id_funcionario")
+  dtAtividade   DateTime     @map("dt_atividade")
+  descricao     String
+
+  @@id([idFuncionario])
+  @@map("atividades")
+}
+
 model Candidatos {
   id                      String            @id @default(uuid()) @map("id_candidato")
   dtCadastro              DateTime          @default(now()) @map("dt_cadastro")
@@ -41,7 +51,41 @@ model Candidatos {
   idFuncionarioUltContato String?           @map("id_funcionario_ultimo_contato")
   cursosInteresse         CursosInteresse[]
 
+  ContatoCandidatos ContatoCandidatos[]
   @@map("candidatos")
+}
+
+model ContatoCandidatos {
+  candidato         Candidatos   @relation(fields: [idCandidato], references: [id])
+  idCandidato       String       @map("id_candidato")
+  funcionario       Funcionarios @relation(fields: [idFuncionario], references: [id])
+  idFuncionario     String       @map("id_funcionario")
+  dtContato         DateTime     @default(now()) @map("dt_contato")
+  edital            String?
+  proxContato       DateTime?    @map("proximo_contato")
+  infosContato      String       @map("infos_contato")
+  statusAtendimento Int          @map("status_atendimento")
+  comentProxContato String?      @map("comentarios_proximo_contato")
+
+  CursosInteresse CursosInteresse[]
+  @@id([idCandidato, idFuncionario])
+  @@map("contato_candidatos")
+}
+
+model ContatoEmpresas {
+  empresa           Empresas     @relation(fields: [idEmpresa], references: [id])
+  idEmpresa         String       @map("id_empresa")
+  funcionario       Funcionarios @relation(fields: [idFuncionario], references: [id])
+  idFuncionario     String       @map("id_funcionario")
+  dtContato         DateTime     @default(now()) @map("dt_contato")
+  areasInteresse    String?      @map("areas_interesse")
+  proxContato       DateTime?    @map("proximo_contato")
+  infosContato      String       @map("infos_contato")
+  statusAtendimento Int          @map("status_atendimento")
+  comentProxContato String?      @map("comentarios_proximo_contato")
+
+  @@id([idEmpresa, idFuncionario])
+  @@map("contato_empresas")
 }
 
 model Cursos {
@@ -76,22 +120,25 @@ model CursosInteresse {
   idCandidato String     @map("id_candidato")
   dtVinculo   DateTime   @default(now()) @map("dt_vinculo")
 
+  ContatoCandidatos              ContatoCandidatos? @relation(fields: [contatoCandidatosIdCandidato, contatoCandidatosIdFuncionario], references: [idCandidato, idFuncionario])
+  contatoCandidatosIdCandidato   String?
+  contatoCandidatosIdFuncionario String?
   @@id([idCurso, idCandidato])
   @@map("cursos_interesse")
 }
 
 model Empresas {
-  id                      String        @id @default(uuid()) @map("id_empresa")
+  id                      String            @id @default(uuid()) @map("id_empresa")
   nome                    String
-  razaoSocial             String?       @map("razao_social")
+  razaoSocial             String?           @map("razao_social")
   cnpj                    String?
-  nomeContato             String        @map("nome_contato")
-  emailContato            String?       @map("email_contato")
-  foneContato             String?       @map("fone_contato")
-  foneContato2            String?       @map("fone_contato_2")
-  cpfContato              String?       @map("cpf_contato")
+  nomeContato             String            @map("nome_contato")
+  emailContato            String?           @map("email_contato")
+  foneContato             String?           @map("fone_contato")
+  foneContato2            String?           @map("fone_contato_2")
+  cpfContato              String?           @map("cpf_contato")
   situacao                Int
-  outraSituacao           String?       @map("outra_situacao")
+  outraSituacao           String?           @map("outra_situacao")
   cep                     String?
   logradouro              String?
   numero                  String?
@@ -99,37 +146,41 @@ model Empresas {
   bairro                  String?
   cidade                  String?
   uf                      String?
-  outrasInfos             String?       @map("outras_infos")
-  funcionarioCad          Funcionarios  @relation("funcionarioCadEmpresa", fields: [idFuncionarioCad], references: [id])
-  idFuncionarioCad        String        @map("id_funcionario_cad")
-  funcionarioUltContato   Funcionarios? @relation("funcionarioUltContatoEmpresa", fields: [idFuncionarioUltContato], references: [id])
-  idFuncionarioUltContato String?       @map("id_funcionario_ultimo_contato")
-  dtUltContato            DateTime?     @map("dt_ultimo_contato")
+  outrasInfos             String?           @map("outras_infos")
+  funcionarioCad          Funcionarios      @relation("funcionarioCadEmpresa", fields: [idFuncionarioCad], references: [id])
+  idFuncionarioCad        String            @map("id_funcionario_cad")
+  funcionarioUltContato   Funcionarios?     @relation("funcionarioUltContatoEmpresa", fields: [idFuncionarioUltContato], references: [id])
+  idFuncionarioUltContato String?           @map("id_funcionario_ultimo_contato")
+  dtUltContato            DateTime?         @map("dt_ultimo_contato")
+  contatos                ContatoEmpresas[]
 
   @@map("empresas")
 }
 
 model Funcionarios {
-  id                    String        @id @default(uuid())
-  dtCadastro            DateTime      @default(now()) @map("dt_cadastro")
-  dtAtualizacao         DateTime      @updatedAt @map("dt_atualizacao")
-  nome                  String        @db.VarChar(80)
+  id                    String            @id @default(uuid())
+  dtCadastro            DateTime          @default(now()) @map("dt_cadastro")
+  dtAtualizacao         DateTime          @updatedAt @map("dt_atualizacao")
+  nome                  String            @db.VarChar(80)
   cpf                   String?
   telefone              String?
-  email                 String        @db.VarChar(120)
-  senha                 String        @db.VarChar(80)
-  senhaTemp             Boolean       @default(true) @map("senha_temp")
-  perfilFuncionario     Int           @map("perfil_funcionario")
-  ativo                 Boolean       @default(true)
-  Unidades              Unidades?     @relation(fields: [unidadesId], references: [id])
-  unidadesId            Int?          @map("id_unidade")
-  candidatosCadastrados Candidatos[]  @relation("funcionarioCadCandidato")
-  ultContatoCandidato   Candidatos[]  @relation("funcionarioUltContatoCandidato")
-  empresasCadastradas   Empresas[]    @relation("funcionarioCadEmpresa")
-  ultContatoEmpresa     Empresas[]    @relation("funcionarioUltContatoEmpresa")
-  RefreshKeys           RefreshKeys[] @relation("funcionarioRefreshKey")
+  email                 String            @db.VarChar(120)
+  senha                 String            @db.VarChar(80)
+  senhaTemp             Boolean           @default(true) @map("senha_temp")
+  perfilFuncionario     Int               @map("perfil_funcionario")
+  ativo                 Boolean           @default(true)
+  Unidades              Unidades?         @relation(fields: [unidadesId], references: [id])
+  unidadesId            Int?              @map("id_unidade")
+  candidatosCadastrados Candidatos[]      @relation("funcionarioCadCandidato")
+  ultContatoCandidato   Candidatos[]      @relation("funcionarioUltContatoCandidato")
+  empresasCadastradas   Empresas[]        @relation("funcionarioCadEmpresa")
+  ultContatoEmpresa     Empresas[]        @relation("funcionarioUltContatoEmpresa")
+  RefreshKeys           RefreshKeys[]     @relation("funcionarioRefreshKey")
+  ContatoEmpresas       ContatoEmpresas[]
 
 
+  ContatoCandidatos ContatoCandidatos[]
+  Atividades        Atividades[]
   @@map("funcionarios")
 }
 
@@ -150,7 +201,7 @@ model Unidades {
   cep              String
   logradouro       String
   numero           String
-  complemento      String
+  complemento      String?
   bairro           String
   cidade           String
   uf               String

@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 class CursosController {
-  async novoCurso (req: Request, res: Response) {
+  async novoCurso (req: Request, res: Response): Promise<Response> {
     try {
       const { nome, modalidade, tipo, link, infosAdicionais } = req.body
 
@@ -29,7 +29,7 @@ class CursosController {
     }
   }
 
-  async buscarCurso (req: Request, res: Response) {
+  async buscarCurso (req: Request, res: Response): Promise<Response> {
     try {
       const { idCurso } = req.params
 
@@ -44,7 +44,7 @@ class CursosController {
     }
   }
 
-  async pesquisarCurso (req: Request, res: Response) {
+  async pesquisarCurso (req: Request, res: Response): Promise<Response> {
     try {
       const { pagina, porPagina, nome, modalidade, tipo } = req.query
 
@@ -79,7 +79,7 @@ class CursosController {
     }
   }
 
-  async getListaCursos (req: Request, res: Response) {
+  async getListaCursos (req: Request, res: Response): Promise<Response> {
     try {
       const cursos = await prisma.cursos.findMany({
         orderBy: [
@@ -96,7 +96,7 @@ class CursosController {
     }
   }
 
-  async editarCurso (req: Request, res: Response) {
+  async editarCurso (req: Request, res: Response): Promise<Response> {
     try {
       const { nome, modalidade, tipo, link, infosAdicionais } = req.body
       const { idCurso } = req.params

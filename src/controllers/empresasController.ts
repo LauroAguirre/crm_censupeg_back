@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 const prisma = new PrismaClient()
 
 class EmpresasController {
-  async novaEmpresa (req: Request, res: Response) {
+  async novaEmpresa (req: Request, res: Response): Promise<Response> {
     try {
       const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, cpfContato, situacao,
         cep, logradouro, numero, complemento, bairro, cidade, uf, outraSituacao, outrasInfos } = req.body
@@ -69,7 +69,7 @@ class EmpresasController {
     }
   }
 
-  async buscarEmpresa (req: Request, res: Response) {
+  async buscarEmpresa (req: Request, res: Response): Promise<Response> {
     try {
       const { idEmpresa } = req.params
 
@@ -84,7 +84,7 @@ class EmpresasController {
     }
   }
 
-  async pesquisarEmpresa (req: Request, res: Response) {
+  async pesquisarEmpresa (req: Request, res: Response): Promise<Response> {
     try {
       const { pagina, porPagina, nome, cnpj, nomeContato, emailContato, foneContato, cpfContato } = req.query
 
@@ -98,8 +98,8 @@ class EmpresasController {
           OR: [
             {nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
             {razaoSocial: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
-            {foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined},
-            {foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined},
+            foneContato ? {foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined} : undefined,
+            foneContato ? {foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined} : undefined,
           ],
           cnpj: cnpj ? {contains: cnpj.toString().replace(/\D/g, '')} : undefined,
           nomeContato: nomeContato ? {contains: nomeContato.toString(), mode: 'insensitive'} : undefined,
@@ -143,7 +143,7 @@ class EmpresasController {
     }
   }
 
-  async getListaEmpresas (req: Request, res: Response) {
+  async getListaEmpresas (req: Request, res: Response): Promise<Response> {
     try {
       const empresas = await prisma.empresas.findMany({
         orderBy: [
@@ -167,7 +167,7 @@ class EmpresasController {
     }
   }
 
-  async editarEmpresa (req: Request, res: Response) {
+  async editarEmpresa (req: Request, res: Response): Promise<Response> {
     console.log('Editando usuário...')
     try {
       const { nome, razaoSocial, cnpj, nomeContato, emailContato, foneContato, foneContato2, cpfContato, situacao,

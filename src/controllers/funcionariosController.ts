@@ -8,7 +8,7 @@ import gerarSenha from 'src/providers/gerarSenha'
 const prisma = new PrismaClient()
 
 class FuncionariosController {
-  async novoFuncionario (req: Request, res: Response) {
+  async novoFuncionario (req: Request, res: Response): Promise<Response> {
     try {
       const { nome, telefone, email, perfilFuncionario, ativo, cpf } = req.body
 
@@ -34,7 +34,7 @@ class FuncionariosController {
     }
   }
 
-  async getFuncionarioLogado (req: Request, res: Response) {
+  async getFuncionarioLogado (req: Request, res: Response): Promise<Response> {
     try {
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
@@ -62,7 +62,7 @@ class FuncionariosController {
     }
   }
 
-  async buscarFuncionario (req: Request, res: Response) {
+  async buscarFuncionario (req: Request, res: Response): Promise<Response> {
     try {
       const { idFuncionario } = req.params
 
@@ -80,7 +80,7 @@ class FuncionariosController {
     }
   }
 
-  async getFuncionariosUnidade (req: Request, res: Response) {
+  async getFuncionariosUnidade (req: Request, res: Response): Promise<Response> {
     try {
       const { idUnidade } = req.query
 
@@ -100,7 +100,7 @@ class FuncionariosController {
     }
   }
 
-  async pesquisarFuncionarios (req: Request, res: Response) {
+  async pesquisarFuncionarios (req: Request, res: Response): Promise<Response> {
     try {
       const { pagina, porPagina, unidade, nome, email, ativo, cpf} = req.query
 
@@ -139,7 +139,7 @@ class FuncionariosController {
     }
   }
 
-  async getListaFuncionarios (req: Request, res: Response) {
+  async getListaFuncionarios (req: Request, res: Response): Promise<Response> {
     try {
       const { idUnidade } = req.query
 
@@ -160,7 +160,7 @@ class FuncionariosController {
     }
   }
 
-  async editarFuncionario (req: Request, res: Response) {
+  async editarFuncionario (req: Request, res: Response): Promise<Response> {
     console.log('Editando funcionário...')
     try {
       const { nome, telefone, email, perfilFuncionario, ativo, cpf } = req.body
@@ -190,7 +190,7 @@ class FuncionariosController {
     }
   }
 
-  async atualizarSenha (req: Request, res: Response) {
+  async atualizarSenha (req: Request, res: Response): Promise<Response> {
     const { senhaAtual, novaSenha } = req.body
     const { idFuncionario } = req.params
 
@@ -217,7 +217,7 @@ class FuncionariosController {
     }
   }
 
-  async resetarSenha (req: Request, res: Response) {
+  async resetarSenha (req: Request, res: Response): Promise<Response> {
     const { idFuncionario } = req.params
 
     try {
