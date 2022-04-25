@@ -73,7 +73,7 @@ class AtividadesController {
     try {
       const { idCandidato, dtContato, edital, cursosInteresse, proxContato, infosContato, statusAtendimento, comentProxContato } = req.body
 
-      
+
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
 
@@ -168,6 +168,9 @@ class AtividadesController {
         },
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),
+        include: {
+          funcionario: true
+        }
       })
 
       return res.status(200).send(historico)
@@ -193,6 +196,9 @@ class AtividadesController {
         },
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),
+        include: {
+          funcionario: true
+        }
       })
 
       return res.status(200).send(historico)
