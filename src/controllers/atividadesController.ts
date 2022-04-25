@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { ContatoEmpresas, Prisma, PrismaClient, PrismaPromise } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
 import { JWTHeader } from 'src/providers/JWTHeader'
 import dayjs from 'dayjs'
@@ -143,104 +143,6 @@ class AtividadesController {
         return res.status(200).send(contato)
 
       })
-    } catch (error) {
-      console.error(error)
-      return res.status(500).json(error)
-    }
-  }
-
-  async buscarCandidato (req: Request, res: Response): Promise<Response> {
-    try {
-      const { idCandidato } = req.params
-
-      const candidato = await prisma.candidatos.findFirst({
-        where:{ id: idCandidato }
-      })
-
-      return res.status(200).json( candidato )
-    } catch (error) {
-      console.error(error)
-      return res.status(500).json(error)
-    }
-  }
-
-  async pesquisarCandidato (req: Request, res: Response): Promise<Response> {
-    try {
-      console.log(req.query)
-      const { pagina, porPagina, nome, email, fone, cpf, dtNascimentoInicio, dtNascimentoFim,
-        escolaridade, curso, cidade, uf, alunoCensupeg} = req.query
-
-        const dtAniversarioInicio = dtNascimentoInicio ? dayjs(dtNascimentoInicio.toString()) : undefined
-        const dtAniversarioFim = dtNascimentoFim ? dayjs(dtNascimentoInicio.toString()) : dtNascimentoInicio ? dayjs(dtNascimentoInicio.toString()) : undefined
-
-      const completo = await prisma.candidatos.findMany({
-        where:{
-          OR: [
-            {cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
-            {outrosCursosInteresse: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
-            {cursosInteresse: curso ? {
-              every: {
-                curso: {
-                  nome: { contains: curso.toString(), mode: 'insensitive' }
-                }
-              }
-            } : undefined},
-          ],
-          nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
-          email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
-          fone1: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
-          fone2: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
-          cpf: cpf ? {contains: cpf.toString().replace(/\D/g, '')} : undefined,
-          escolaridade: escolaridade ? Number(escolaridade) : null,
-
-          cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
-          uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
-          dtNascimento: {
-            gte: dtAniversarioInicio ? new Date(dtAniversarioInicio.format('YYYY-MM-DD')) : undefined,
-            lt: dtAniversarioFim ? new Date(dtAniversarioFim.format('YYYY-MM-DD')) : undefined
-          },
-          alunoCensupeg: alunoCensupeg ? Boolean(alunoCensupeg) : undefined
-        }})
-
-      const candidatos = await prisma.candidatos.findMany({
-        where:{
-          OR: [
-            {cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
-            {outrosCursosInteresse: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
-            {cursosInteresse: curso ? {
-              every: {
-                curso: {
-                  nome: { contains: curso.toString(), mode: 'insensitive' }
-                }
-              }
-            } : undefined},
-          ],
-          nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
-          email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
-          fone1: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
-          fone2: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
-          cpf: cpf ? {contains: cpf.toString().replace(/\D/g, '')} : undefined,
-          escolaridade: escolaridade ? Number(escolaridade) : null,
-          // cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined,
-          cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
-          uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
-          dtNascimento: {
-            gte: dtAniversarioInicio ? new Date(dtAniversarioInicio.format('YYYY-MM-DD')) : undefined,
-            lt: dtAniversarioFim ? new Date(dtAniversarioFim.format('YYYY-MM-DD')) : undefined
-          },
-          alunoCensupeg: alunoCensupeg ? Boolean(alunoCensupeg) : undefined
-        },
-        include: {cursosInteresse: true},
-        take: Number(porPagina),
-        skip: ( Number(pagina) - 1) * Number(porPagina),
-        orderBy: [
-          {
-            nome: 'asc',
-          },
-        ],
-      })
-
-      return res.status(200).json({ candidatos, total: completo.length, paginas: Math.ceil(completo.length/Number(porPagina)) })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
