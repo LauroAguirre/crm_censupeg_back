@@ -56,6 +56,7 @@ model Candidatos {
 }
 
 model ContatoCandidatos {
+  idContato         Int          @id @default(autoincrement())
   candidato         Candidatos   @relation(fields: [idCandidato], references: [id])
   idCandidato       String       @map("id_candidato")
   funcionario       Funcionarios @relation(fields: [idFuncionario], references: [id])
@@ -68,11 +69,12 @@ model ContatoCandidatos {
   comentProxContato String?      @map("comentarios_proximo_contato")
 
   CursosInteresse CursosInteresse[]
-  @@id([idCandidato, idFuncionario])
+  // @@id([idContato, idCandidato, idFuncionario])
   @@map("contato_candidatos")
 }
 
 model ContatoEmpresas {
+  idContato         Int          @id @default(autoincrement())
   empresa           Empresas     @relation(fields: [idEmpresa], references: [id])
   idEmpresa         String       @map("id_empresa")
   funcionario       Funcionarios @relation(fields: [idFuncionario], references: [id])
@@ -84,7 +86,6 @@ model ContatoEmpresas {
   statusAtendimento Int          @map("status_atendimento")
   comentProxContato String?      @map("comentarios_proximo_contato")
 
-  @@id([idEmpresa, idFuncionario])
   @@map("contato_empresas")
 }
 
@@ -120,9 +121,9 @@ model CursosInteresse {
   idCandidato String     @map("id_candidato")
   dtVinculo   DateTime   @default(now()) @map("dt_vinculo")
 
-  ContatoCandidatos              ContatoCandidatos? @relation(fields: [contatoCandidatosIdCandidato, contatoCandidatosIdFuncionario], references: [idCandidato, idFuncionario])
-  contatoCandidatosIdCandidato   String?
-  contatoCandidatosIdFuncionario String?
+  ContatoCandidatos  ContatoCandidatos? @relation(fields: [idContatoCandidato], references: [idContato])
+  idContatoCandidato Int?
+  // contatoCandidatosIdFuncionario String?
   @@id([idCurso, idCandidato])
   @@map("cursos_interesse")
 }
