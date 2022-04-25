@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 class AtividadesController {
   async contatoEmpresa (req: Request, res: Response): Promise<Response> {
     try {
-      const { idEmpresa, dtContato, areasInteresse, proxContato, infosContato, statusAtendimento } = req.body
+      const { idEmpresa, dtContato, areasInteresse, proxContato, infosContato, statusAtendimento, comentProxContato } = req.body
 
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
@@ -42,7 +42,8 @@ class AtividadesController {
               areasInteresse,
               proxContato,
               infosContato,
-              statusAtendimento
+              statusAtendimento,
+              comentProxContato
             },
           })
 
@@ -70,8 +71,9 @@ class AtividadesController {
 
   async contatoCandidato (req: Request, res: Response): Promise<Response> {
     try {
-      const { idCandidato, dtContato, edital, cursosInteresse, proxContato, infosContato, statusAtendimento } = req.body
+      const { idCandidato, dtContato, edital, cursosInteresse, proxContato, infosContato, statusAtendimento, comentProxContato } = req.body
 
+      
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
 
@@ -86,7 +88,6 @@ class AtividadesController {
         })
 
         if(!funcionario) return res.status(400).send('Funcionário não encontrado')
-
         const agora = new Date()
           //Salvando o contato
           const contato = await prisma.contatoCandidatos.create({
@@ -106,6 +107,7 @@ class AtividadesController {
               proxContato,
               infosContato,
               statusAtendimento,
+              comentProxContato
             },
           })
 
