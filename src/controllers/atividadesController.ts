@@ -151,6 +151,57 @@ class AtividadesController {
 
   async getHistoricoContatoCandidato (req: Request, res: Response): Promise<Response> {
     try {
+      const { pagina, porPagina } = req.query
+      const { idCandidato } = req.params
+
+      console.log(req.query)
+
+      const historico = await prisma.contatoCandidatos.findMany({
+        where: {
+          idCandidato,
+
+        },
+        orderBy: {
+          dtContato: 'desc'
+        },
+        take: Number(porPagina),
+        skip: ( Number(pagina) - 1) * Number(porPagina),
+      })
+
+      return res.status(200).send(historico)
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
+  async getHistoricoContatoEmpresa (req: Request, res: Response): Promise<Response> {
+    try {
+      const { pagina, porPagina } = req.query
+      const { idEmpresa } = req.params
+
+      console.log(req.query)
+
+      const historico = await prisma.contatoEmpresas.findMany({
+        where: {
+          idEmpresa,
+        },
+        orderBy: {
+          dtContato: 'desc'
+        },
+        take: Number(porPagina),
+        skip: ( Number(pagina) - 1) * Number(porPagina),
+      })
+
+      return res.status(200).send(historico)
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
+  async getHistoricoContatoCandidatoPorData (req: Request, res: Response): Promise<Response> {
+    try {
       const { dtInicio, dtFim } = req.query
       const { idCandidato } = req.params
 
@@ -176,7 +227,7 @@ class AtividadesController {
     }
   }
 
-  async getHistoricoContatoEmpresa (req: Request, res: Response): Promise<Response> {
+  async getHistoricoContatoEmpresaPorData (req: Request, res: Response): Promise<Response> {
     try {
       const { dtInicio, dtFim } = req.query
       const { idEmpresa } = req.params
