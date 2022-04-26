@@ -101,22 +101,28 @@ class CandidatosController {
       const { pagina, porPagina, nome, email, fone, cpf, dtNascimentoInicio, dtNascimentoFim,
         escolaridade, curso, cidade, uf, alunoCensupeg} = req.query
 
-        const dtAniversarioInicio = dtNascimentoInicio ? dayjs(dtNascimentoInicio.toString()) : undefined
-        const dtAniversarioFim = dtNascimentoFim ? dayjs(dtNascimentoInicio.toString()) : dtNascimentoInicio ? dayjs(dtNascimentoInicio.toString()) : undefined
+        const dtAniversarioInicio = dtNascimentoInicio ? new Date(dtNascimentoInicio.toLocaleString()) : undefined
+        const dtAniversarioFim = dtNascimentoFim ? new Date(dtNascimentoInicio.toLocaleString()) : dtNascimentoInicio ? new Date(dtNascimentoInicio.toLocaleString()) : undefined
+
+      const orFilters = []
+
+      if(curso){
+        orFilters.push(
+          {cursoAtual: {contains: curso.toString(), mode: 'insensitive'}},
+          {outrosCursosInteresse: {contains: curso.toString(), mode: 'insensitive'}},
+          {cursosInteresse: {
+            every: {
+              curso: {
+                nome: { contains: curso.toString(), mode: 'insensitive' }
+              }
+            }
+          }}
+        )
+      }
 
       const completo = await prisma.candidatos.findMany({
         where:{
-          // OR: [
-          //   {cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
-          //   {outrosCursosInteresse: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
-          //   {cursosInteresse: curso ? {
-          //     every: {
-          //       curso: {
-          //         nome: { contains: curso.toString(), mode: 'insensitive' }
-          //       }
-          //     }
-          //   } : undefined},
-          // ],
+          OR: orFilters.length > 0 ? orFilters : undefined,
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
           fone1: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
@@ -127,37 +133,26 @@ class CandidatosController {
           cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
           uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
           dtNascimento: {
-            gte: dtAniversarioInicio ? new Date(dtAniversarioInicio.format('YYYY-MM-DD')) : undefined,
-            lt: dtAniversarioFim ? new Date(dtAniversarioFim.format('YYYY-MM-DD')) : undefined
+            gte: dtAniversarioInicio,
+            lt: dtAniversarioFim
           },
           alunoCensupeg: alunoCensupeg ? Boolean(alunoCensupeg) : undefined
         }})
 
       const candidatos = await prisma.candidatos.findMany({
         where:{
-          // OR: [
-          //   {cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
-          //   {outrosCursosInteresse: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined},
-          //   {cursosInteresse: curso ? {
-          //     every: {
-          //       curso: {
-          //         nome: { contains: curso.toString(), mode: 'insensitive' }
-          //       }
-          //     }
-          //   } : undefined},
-          // ],
+          OR: orFilters.length > 0 ? orFilters : undefined,
           nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined,
           email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
           fone1: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           fone2: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           cpf: cpf ? {contains: cpf.toString().replace(/\D/g, '')} : undefined,
           escolaridade: escolaridade ? Number(escolaridade) : null,
-          // cursoAtual: curso ? {contains: curso.toString(), mode: 'insensitive'} : undefined,
           cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
           uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
           dtNascimento: {
-            gte: dtAniversarioInicio ? new Date(dtAniversarioInicio.format('YYYY-MM-DD')) : undefined,
-            lt: dtAniversarioFim ? new Date(dtAniversarioFim.format('YYYY-MM-DD')) : undefined
+            gte: dtAniversarioInicio,
+            lt: dtAniversarioFim
           },
           alunoCensupeg: alunoCensupeg ? Boolean(alunoCensupeg) : undefined
         },

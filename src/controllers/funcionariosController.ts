@@ -139,27 +139,6 @@ class FuncionariosController {
     }
   }
 
-  async getListaFuncionarios (req: Request, res: Response): Promise<Response> {
-    try {
-      const { idUnidade } = req.query
-
-      const funcionarios = await prisma.funcionarios.findMany({
-        where:{ unidadesId: { not: Number(idUnidade) }},
-        include: { Unidades: true},
-        orderBy: [
-          {
-            nome: 'asc',
-          },
-        ],
-      })
-
-      return res.status(200).json(funcionarios)
-    } catch (error) {
-      console.error(error)
-      return res.status(500).json(error)
-    }
-  }
-
   async editarFuncionario (req: Request, res: Response): Promise<Response> {
     console.log('Editando funcionário...')
     try {
@@ -229,6 +208,35 @@ class FuncionariosController {
       })
 
       return res.status(200).send(novaSenha)
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
+  async getAtividadesFuncionario (req: Request, res: Response): Promise<Response> {
+    try {
+      const {dtInicio, dtFim} = req.query
+      const { idFuncionario } = req.params
+
+      console.log(req.query)
+      console.log(req.params)
+
+      const contatosCandidatos = await prisma.contatoCandidatos.findMany({
+        where: {
+          idFuncionario,
+          dtContato: {
+            gte: new Date(dtInicio.toLocaleString()),
+            lte: new Date(dtFim.toLocaleString())
+          }
+        },
+        include:{
+          funcionario:true
+        }
+      })
+
+console.log(contatosCandidatos)
+      return res.status(200).send(contatosCandidatos)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)

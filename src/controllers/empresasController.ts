@@ -90,42 +90,43 @@ class EmpresasController {
 
       console.log(req.query)
 
-      // const inicioPeriodo = dtPeriodoContatoInicio ? dayjs(dtPeriodoContatoInicio.toString()).format('YYYY-DD-MM') : undefined
-      // const dtContatoFim = dtPeriodoContatoFim ? dayjs(dtPeriodoContatoFim.toString()).format('YYYY-DD-MM') : undefined
+      let orFilters = []
+      if(nome){
+        orFilters.push({nome: {
+          contains: nome.toString(),
+          mode: 'insensitive'
+        }},
+        {razaoSocial: {
+          contains: nome.toString(),
+          mode: 'insensitive'
+        }})
+      }
+
+      if(foneContato) {
+        orFilters.push({ foneContato:{
+          contains: foneContato.toString(),
+          mode: 'insensitive'
+        }},
+        {foneContato2:{
+          contains: foneContato.toString(),
+          mode: 'insensitive'
+        }})
+      }
 
       const completo = await prisma.empresas.findMany({
         where:{
-          OR: [
-            {nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
-            {razaoSocial: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
-            foneContato ? {foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined} : undefined,
-            foneContato ? {foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined} : undefined,
-          ],
+          OR: orFilters.length > 0 ? orFilters : undefined,
           cnpj: cnpj ? {contains: cnpj.toString().replace(/\D/g, '')} : undefined,
           nomeContato: nomeContato ? {contains: nomeContato.toString(), mode: 'insensitive'} : undefined,
           emailContato: emailContato ? {contains: emailContato.toString(), mode: 'insensitive'} : undefined,
-          cpfContato: cpfContato ? {contains: cpfContato.toString().replace(/\D/g, '')} : undefined,
-          // dtUltContato: {
-          //   gte: inicioPeriodo,
-          //   lt: dtContatoFim
-          // },
         }})
 
       const empresas = await prisma.empresas.findMany({
         where:{
-          OR: [
-            {nome: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
-            {razaoSocial: nome ? {contains: nome.toString(), mode: 'insensitive'} : undefined},
-            {foneContato: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined},
-            {foneContato2: foneContato ? {contains: foneContato.toString().replace(/\D/g, '')} : undefined},
-          ],
+          OR: orFilters.length > 0 ? orFilters : undefined,
           cnpj: cnpj ? {contains: cnpj.toString().replace(/\D/g, '')} : undefined,
           nomeContato: nomeContato ? {contains: nomeContato.toString(), mode: 'insensitive'} : undefined,
           emailContato: emailContato ? {contains: emailContato.toString(), mode: 'insensitive'} : undefined,
-          // dtUltContato: {
-          //   gte: inicioPeriodo,
-          //   lt: dtContatoFim
-          // },
         },
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),

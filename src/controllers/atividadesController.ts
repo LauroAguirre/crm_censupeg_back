@@ -260,8 +260,8 @@ class AtividadesController {
         where: {
           idCandidato,
           dtContato: {
-            gte: new Date(dtInicio.toString()),
-            lte: new Date(dtFim.toString())
+            gte: new Date(dtInicio.toLocaleString()),
+            lte: new Date(dtFim.toLocaleString())
           }
         },
         orderBy: {
@@ -287,8 +287,8 @@ class AtividadesController {
         where: {
           idEmpresa,
           dtContato: {
-            gte: new Date(dtInicio.toString()),
-            lte: new Date(dtFim.toString())
+            gte: new Date(dtInicio.toLocaleString()),
+            lte: new Date(dtFim.toLocaleString())
           }
         },
         orderBy: {
