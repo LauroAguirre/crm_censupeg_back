@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 class AtividadesController {
   async atividade (req: Request, res: Response): Promise<Response>{
     try {
-      const { descricao } = req.body
+      const { descricao, dtAtividade } = req.body
 
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
@@ -24,11 +24,11 @@ class AtividadesController {
         })
 
         if(!funcionario) return res.status(400).send('Funcionário não encontrado')
-        const agora = new Date()
+        // const agora = new Date()
           //Salvando a atividade
           const atividade = await prisma.atividades.create({
             data: {
-              dtAtividade: agora,
+              dtAtividade: dtAtividade,
               funcionario: {
                 connect: {
                   id: idFuncionario
