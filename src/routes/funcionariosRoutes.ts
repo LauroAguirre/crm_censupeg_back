@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import atividadesController from 'src/controllers/atividadesController'
 import funcionariosController from 'src/controllers/funcionariosController'
 import authMiddleware from 'src/middleware/authMiddleware'
 // import authController from '../services/controllers/authController'
@@ -17,6 +18,7 @@ router.put('/funcionarios/:idFuncionario/resetarSenha', authMiddleware, funciona
 router.put('/funcionarios/:idFuncionario/atualizarSenha', authMiddleware, funcionariosController.atualizarSenha)
 
 router.post('/novoFuncionario', authMiddleware, funcionariosController.novoFuncionario)
+router.post('/registrarAtividade', authMiddleware, atividadesController.atividade)
 router.post('/primeiroFuncionario', funcionariosController.novoFuncionario)
 
 

@@ -6,6 +6,47 @@ import dayjs from 'dayjs'
 
 const prisma = new PrismaClient()
 class AtividadesController {
+  async atividade (req: Request, res: Response): Promise<Response>{
+    try {
+      const { descricao } = req.body
+
+      const authHeader = req.headers.authorization
+      const [, token] = authHeader.split(' ')
+
+      verify(token, process.env.JWT_TOKEN, async (error, headerToken:JWTHeader) => {
+        if (error) {
+          return res.status(401).send({ message: 'Usuário não encontrado' })
+        }
+
+        const idFuncionario = headerToken.userId.toString()
+        const funcionario = await prisma.funcionarios.findFirst({
+          where:{ id: idFuncionario }
+        })
+
+        if(!funcionario) return res.status(400).send('Funcionário não encontrado')
+        const agora = new Date()
+          //Salvando a atividade
+          const atividade = await prisma.atividades.create({
+            data: {
+              dtAtividade: agora,
+              funcionario: {
+                connect: {
+                  id: idFuncionario
+                }
+              },
+              descricao
+            },
+          })
+
+        return res.status(200).send(atividade)
+
+      })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
   async contatoEmpresa (req: Request, res: Response): Promise<Response> {
     try {
       const { idEmpresa, dtContato, areasInteresse, proxContato, infosContato, statusAtendimento, comentProxContato } = req.body

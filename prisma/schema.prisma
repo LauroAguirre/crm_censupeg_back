@@ -8,12 +8,12 @@ datasource db {
 }
 
 model Atividades {
+  idAtividade   Int          @id @default(autoincrement())
   funcionario   Funcionarios @relation(fields: [idFuncionario], references: [id])
   idFuncionario String       @map("id_funcionario")
   dtAtividade   DateTime     @map("dt_atividade")
   descricao     String
 
-  @@id([idFuncionario])
   @@map("atividades")
 }
 
