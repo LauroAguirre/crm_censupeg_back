@@ -219,9 +219,6 @@ class FuncionariosController {
       const {dtInicio, dtFim} = req.query
       const { idFuncionario } = req.params
 
-      console.log(req.query)
-      console.log(req.params)
-
       const contatosCandidatos = await prisma.contatoCandidatos.findMany({
         where: {
           idFuncionario,
@@ -231,12 +228,68 @@ class FuncionariosController {
           }
         },
         include:{
+          funcionario:true,
+          candidato: true
+        }
+      })
+
+      const contatosEmpresas = await prisma.contatoEmpresas.findMany({
+        where: {
+          idFuncionario,
+          dtContato: {
+            gte: new Date(dtInicio.toLocaleString()),
+            lte: new Date(dtFim.toLocaleString())
+          }
+        },
+        include:{
+          funcionario:true,
+          empresa: true
+        }
+      })
+
+      const outrasAtividades = await prisma.atividades.findMany({
+        where: {
+          idFuncionario,
+          dtAtividade: {
+            gte: new Date(dtInicio.toLocaleString()),
+            lte: new Date(dtFim.toLocaleString())
+          }
+        },
+        include:{
           funcionario:true
         }
       })
 
-console.log(contatosCandidatos)
-      return res.status(200).send(contatosCandidatos)
+      let atividades = []
+
+      contatosCandidatos.forEach(contato =>{
+        atividades.push({
+          dtAtividade: contato.dtContato,
+          idContato: contato.idCandidato,
+          nome: contato.candidato.nome,
+          detalhes: contato.edital ? `${contato.edital} - ${contato.infosContato}` : contato.infosContato
+        })
+      })
+      contatosEmpresas.forEach(contato =>{
+        atividades.push({
+          dtAtividade: contato.dtContato,
+          idContato: contato.idEmpresa,
+          nome: contato.empresa.nome,
+          detalhes: contato.areasInteresse ? `Interesse em ${contato.areasInteresse}. ${contato.infosContato}` : contato.infosContato
+        })
+      })
+      outrasAtividades.forEach(atividade =>{
+        atividades.push({
+          dtAtividade: atividade.dtAtividade,
+          detalhes: atividade.descricao
+        })
+      })
+
+      atividades = atividades.sort((a, b) => {
+        return a.dtAtividade - b.dtAtividade
+      })
+
+      return res.status(200).send(atividades)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
