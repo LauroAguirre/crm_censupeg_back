@@ -216,7 +216,7 @@ class FuncionariosController {
 
   async getAtividadesFuncionario (req: Request, res: Response): Promise<Response> {
     try {
-      const {dtInicio, dtFim} = req.query
+      const {pagina, porPagina, dtInicio, dtFim} = req.query
       const { idFuncionario } = req.params
 
       const contatosCandidatos = await prisma.contatoCandidatos.findMany({
@@ -289,7 +289,11 @@ class FuncionariosController {
         return a.dtAtividade - b.dtAtividade
       })
 
-      return res.status(200).send(atividades)
+      const posInicial = (Number(pagina)-1) * Number(porPagina)
+      const posFinal = posInicial + Number(porPagina)
+      const paginaRetorno = atividades.slice(posInicial, posFinal)
+
+      return res.status(200).send(paginaRetorno)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
