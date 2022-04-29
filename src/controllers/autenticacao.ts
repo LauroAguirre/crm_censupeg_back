@@ -18,7 +18,7 @@ class AutenticacaoController {
 
       const funcionario = await prisma.funcionarios.findFirst({
         where:{email},
-        include: { Unidades: true}})
+        include: { unidades: true}})
       console.log('Funcionario:')
       console.log(funcionario)
       console.log('----------------------')
