@@ -125,7 +125,7 @@ class FuncionariosController {
           ativo: filtroAtivos
         },
         include: {
-          Unidades: true,
+          unidades: true,
         },
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),
