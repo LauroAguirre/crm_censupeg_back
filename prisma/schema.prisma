@@ -170,7 +170,7 @@ model Funcionarios {
   senhaTemp             Boolean           @default(true) @map("senha_temp")
   perfilFuncionario     Int               @map("perfil_funcionario")
   ativo                 Boolean           @default(true)
-  Unidades              Unidades?         @relation(fields: [unidadesId], references: [id])
+  unidades              Unidades?         @relation(fields: [unidadesId], references: [id])
   unidadesId            Int?              @map("id_unidade")
   candidatosCadastrados Candidatos[]      @relation("funcionarioCadCandidato")
   ultContatoCandidato   Candidatos[]      @relation("funcionarioUltContatoCandidato")

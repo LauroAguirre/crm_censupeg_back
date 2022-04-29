@@ -124,6 +124,9 @@ class FuncionariosController {
           email: email ? {contains: email.toString(), mode: 'insensitive'} : undefined,
           ativo: filtroAtivos
         },
+        include: {
+          Unidades: true,
+        },
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),
         orderBy: [
