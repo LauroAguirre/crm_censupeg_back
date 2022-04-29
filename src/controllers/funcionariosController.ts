@@ -48,7 +48,7 @@ class FuncionariosController {
         const idFuncionario = headerToken.userId.toString()
         const funcionario = await prisma.funcionarios.findFirst({
           where:{ id: idFuncionario },
-          include: { Unidades: true}
+          include: { unidades: true}
         })
 
         delete funcionario.senha
@@ -69,7 +69,7 @@ class FuncionariosController {
 
       const funcionario = await prisma.funcionarios.findFirst({
         where:{ id: idFuncionario },
-        include: { Unidades: true}
+        include: { unidades: true}
       })
 
       delete funcionario.senha
