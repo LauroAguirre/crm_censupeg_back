@@ -1,11 +1,10 @@
 {
   "name": "crm_censupeg_back",
   "version": "1.0.0",
-  "description": "APi backend para o CRM da Censupeg",
+  "description": "API backend para o CRM da Censupeg",
   "main": "server.ts",
   "repository": "https://github.com/LauroAguirre/crm_censupeg_back.git",
-  "author": "Censupeg",
-  "license": "MIT",
+  "author": "Censupeg - CoopTeam",
   "private": true,
   "scripts": {
     "build": "rimraf ./build && tsc && yarn copyviews",

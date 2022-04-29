@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import { JWTHeader } from 'src/providers/JWTHeader'
 import { verify } from 'jsonwebtoken'
 import gerarSenha from 'src/providers/gerarSenha'
+import dayjs from 'dayjs'
 
 const prisma = new PrismaClient()
 
@@ -216,15 +217,18 @@ class FuncionariosController {
 
   async getAtividadesFuncionario (req: Request, res: Response): Promise<Response> {
     try {
-      const {pagina, porPagina, dtInicio, dtFim} = req.query
+      const {dtInicio, dtFim} = req.query
       const { idFuncionario } = req.params
+
+      const dataInicio = new Date(dayjs(dtInicio.toString()).format('YYYY-MM-DD'))
+      const dataFim = new Date(dayjs(dtFim.toString()).add(1,'day').format('YYYY-MM-DD'))
 
       const contatosCandidatos = await prisma.contatoCandidatos.findMany({
         where: {
           idFuncionario,
           dtContato: {
-            gte: new Date(dtInicio.toLocaleString()),
-            lte: new Date(dtFim.toLocaleString())
+            gte: dataInicio,
+            lte: dataFim
           }
         },
         include:{
@@ -237,8 +241,8 @@ class FuncionariosController {
         where: {
           idFuncionario,
           dtContato: {
-            gte: new Date(dtInicio.toLocaleString()),
-            lte: new Date(dtFim.toLocaleString())
+            gte: dataInicio,
+            lte: dataFim
           }
         },
         include:{
@@ -251,8 +255,8 @@ class FuncionariosController {
         where: {
           idFuncionario,
           dtAtividade: {
-            gte: new Date(dtInicio.toLocaleString()),
-            lte: new Date(dtFim.toLocaleString())
+            gte: dataInicio,
+            lte: dataFim
           }
         },
         include:{
@@ -286,14 +290,10 @@ class FuncionariosController {
       })
 
       atividades = atividades.sort((a, b) => {
-        return a.dtAtividade - b.dtAtividade
+        return b.dtAtividade - a.dtAtividade
       })
 
-      const posInicial = (Number(pagina)-1) * Number(porPagina)
-      const posFinal = posInicial + Number(porPagina)
-      const paginaRetorno = atividades.slice(posInicial, posFinal)
-
-      return res.status(200).send(paginaRetorno)
+      return res.status(200).send(atividades)
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
