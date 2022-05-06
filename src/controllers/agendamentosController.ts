@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { Agendamentos, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
-import { JWTHeader } from 'src/providers/JWTHeader'
+import { JWTHeader } from '../providers/JWTHeader'
 
 const prisma = new PrismaClient()
 class AgendamentosController {
@@ -105,7 +105,7 @@ class AgendamentosController {
   }
 }
 
-export async function novoAgendamento (agendamento:Agendamentos): Promise<Agendamentos> {
+export async function novoAgendamento (agendamento:any): Promise<any> {
   try {
     const novoAgendamento = await prisma.agendamentos.create({
       data: {

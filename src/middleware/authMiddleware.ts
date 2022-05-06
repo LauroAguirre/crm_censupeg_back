@@ -5,7 +5,7 @@ import CriarRefreshTk from '../providers/criarRefreshTk'
 
 import dayjs from 'dayjs'
 import { PrismaClient } from '@prisma/client'
-import { JWTHeader } from 'src/providers/JWTHeader'
+import { JWTHeader } from '../providers/JWTHeader'
 
 const prisma = new PrismaClient()
 

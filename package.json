@@ -11,8 +11,7 @@
     "commit": "cz&git push",
     "copyviews": "copyfiles  -u 2 src/views/*.ejs build/views",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules  src/server.ts",
-    "start:dev": "nodemon",
-    "start:prod": "yarn build:prod && npx --exec ts-node --files build/server.js"
+    "start": "yarn build && npx --exec ts-node --files build/server.js"
   },
   "dependencies": {
     "@prisma/client": "^3.12.0",

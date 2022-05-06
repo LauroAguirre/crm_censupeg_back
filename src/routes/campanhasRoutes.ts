@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import campanhasController from 'src/controllers/campanhasController'
-import authMiddleware from 'src/middleware/authMiddleware'
+import campanhasController from '../controllers/campanhasController'
+import authMiddleware from '../middleware/authMiddleware'
 
 const router = Router()
 

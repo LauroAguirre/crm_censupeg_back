@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
-import { JWTHeader } from 'src/providers/JWTHeader'
+import { JWTHeader } from '../providers/JWTHeader'
 import { novoAgendamento } from './agendamentosController'
 
 const prisma = new PrismaClient()

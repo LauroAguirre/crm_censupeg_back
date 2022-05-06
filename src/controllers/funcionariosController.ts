@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-import { JWTHeader } from 'src/providers/JWTHeader'
 import { verify } from 'jsonwebtoken'
-import gerarSenha from 'src/providers/gerarSenha'
+import { JWTHeader } from '../providers/JWTHeader'
+import gerarSenha from '../providers/gerarSenha'
 import dayjs from 'dayjs'
 
 const prisma = new PrismaClient()

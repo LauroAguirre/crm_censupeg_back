@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Acesso ao CRM</title>
+</head>
+<style>
+  body{
+    font-size: medium;
+  }
+
+  .session {
+    page-break-inside: avoid;
+  }
+
+  table {
+    width: 100%;
+  }
+  th, td {
+    text-align: center;
+    border: 1px solid black;
+  }
+</style>
+<body class="m-5 text-sm">
+  <p>Olá, <%= patient.patName %>!</p>
+
+  <p>
+    <span>Para acessar, basta clicar no link abaixo e utilizar seu e-mail e a seguinte senha para acesso:</span>
+    <strong style="font-size: 1,5rem;"><%= tempPassword %></strong>
+  </p>
+
+  <p>Lembre-se que esta é uma senha temporária. Você deverá cadastrar uma nova senha após o primeiro acesso.</p>
+  <br />
+  <br />
+  <a href="https://medlife-front.vercel.app/login" target="_blank">Acessar o sistema</a>
+  <br />
+  <br />
+  <p>Este é um e-mail automático do sistema. Por favor não responda.</p>
+  <p>Doca®</p>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 import { Router } from 'express'
-import atividadesController from 'src/controllers/atividadesController'
-import funcionariosController from 'src/controllers/funcionariosController'
-import authMiddleware from 'src/middleware/authMiddleware'
+import atividadesController from '../controllers/atividadesController'
+import funcionariosController from '../controllers/funcionariosController'
+import authMiddleware from '../middleware/authMiddleware'
 // import authController from '../services/controllers/authController'
 
 const router = Router()

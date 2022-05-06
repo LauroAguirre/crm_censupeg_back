@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import requestIp from 'request-ip'
 import { sign } from 'jsonwebtoken'
-import criarRefreshTk from 'src/providers/criarRefreshTk'
+import criarRefreshTk from '../providers/criarRefreshTk'
 
 const prisma = new PrismaClient()
 
