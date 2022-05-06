@@ -110,7 +110,7 @@ class AtividadesController {
           tipoAtividade: CONTATO_EMPRESA,
           descricao: comentProxContato,
           idEmpresa,
-          idCandidato: null
+          idCandidato: undefined
         })
 
         return res.status(200).send(contato)
@@ -203,7 +203,7 @@ class AtividadesController {
           idFuncionario,
           tipoAtividade: CONTATO_CANDIDATO,
           descricao: comentProxContato,
-          idEmpresa: null,
+          idEmpresa: undefined,
           idCandidato
         })
 
