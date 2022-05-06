@@ -7,6 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Agendamentos {
+  id            String       @id @default(uuid()) @map("id_agendamento")
+  dtAgendamento DateTime     @map("data_agendamento")
+  funcionario   Funcionarios @relation(fields: [idFuncionario], references: [id])
+  idFuncionario String       @map("id_funcionario")
+  descricao     String
+  tipoAtividade Int          @map("tipo_atividade")
+  candidato     Candidatos?  @relation(fields: [idCandidato], references: [id])
+  idCandidato   String?      @map("id_candidato")
+  empresa       Empresas?    @relation(fields: [idEmpresa], references: [id])
+  idEmpresa     String?      @map("id_empresa")
+  concluida     Boolean      @default(false)
+  dtConclusao   DateTime?    @map("data_conclusao")
+}
+
 model Atividades {
   idAtividade   Int          @id @default(autoincrement())
   funcionario   Funcionarios @relation(fields: [idFuncionario], references: [id])
@@ -15,6 +30,35 @@ model Atividades {
   descricao     String
 
   @@map("atividades")
+}
+
+model Campanhas {
+  id           String                  @id @default(uuid()) @map("id_campanha")
+  nome         String
+  idZappier    String                  @map("id_zappier")
+  unidades     CampanhasUnidades[]
+  redesSociais CampanhasRedesSociais[]
+  Candidatos   Candidatos[]
+}
+
+model CampanhasRedesSociais {
+  Campanhas    Campanhas?    @relation(fields: [idCampanha], references: [id])
+  idCampanha   String        @map("id_campanha")
+  RedesSociais RedesSociais? @relation(fields: [idRede], references: [id])
+  idRede       Int           @map("id_rede_social")
+
+  @@id([idCampanha, idRede])
+  @@map("campanhas_redes_sociais")
+}
+
+model CampanhasUnidades {
+  Campanhas  Campanhas? @relation(fields: [idCampanha], references: [id])
+  idCampanha String     @map("id_campanha")
+  Unidades   Unidades?  @relation(fields: [idUnidade], references: [id])
+  idUnidade  Int        @map("id_unidade")
+
+  @@id([idCampanha, idUnidade])
+  @@map("campanhas_unidades")
 }
 
 model Candidatos {
@@ -50,8 +94,11 @@ model Candidatos {
   funcionarioUltContato   Funcionarios?     @relation("funcionarioUltContatoCandidato", fields: [idFuncionarioUltContato], references: [id])
   idFuncionarioUltContato String?           @map("id_funcionario_ultimo_contato")
   cursosInteresse         CursosInteresse[]
+  Campanha                Campanhas?        @relation(fields: [idCampanha], references: [id])
+  idCampanha              String?           @map("id_campanha")
 
   ContatoCandidatos ContatoCandidatos[]
+  Agendamentos      Agendamentos[]
   @@map("candidatos")
 }
 
@@ -155,6 +202,7 @@ model Empresas {
   dtUltContato            DateTime?         @map("dt_ultimo_contato")
   contatos                ContatoEmpresas[]
 
+  Agendamentos Agendamentos[]
   @@map("empresas")
 }
 
@@ -182,7 +230,14 @@ model Funcionarios {
 
   ContatoCandidatos ContatoCandidatos[]
   Atividades        Atividades[]
+  Agendamentos      Agendamentos[]
   @@map("funcionarios")
+}
+
+model RedesSociais {
+  id                    Int                     @id @default(autoincrement()) @map("id_rede_social")
+  nome                  String
+  CampanhasRedesSociais CampanhasRedesSociais[]
 }
 
 model RefreshKeys {
@@ -197,8 +252,8 @@ model RefreshKeys {
 }
 
 model Unidades {
-  id               Int                @id @default(autoincrement())
-  nome             String             @unique
+  id               Int                 @id @default(autoincrement())
+  nome             String              @unique
   cep              String
   logradouro       String
   numero           String
@@ -208,6 +263,7 @@ model Unidades {
   uf               String
   funcionarios     Funcionarios[]
   CursosEmUnidades CursosEmUnidades[]
+  campanhas        CampanhasUnidades[]
 
   @@map("unidades")
 }

@@ -2,9 +2,11 @@ import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
 import { JWTHeader } from 'src/providers/JWTHeader'
-import dayjs from 'dayjs'
+import { novoAgendamento } from './agendamentosController'
 
 const prisma = new PrismaClient()
+const CONTATO_CANDIDATO = 1
+const CONTATO_EMPRESA = 2
 class AtividadesController {
   async atividade (req: Request, res: Response): Promise<Response>{
     try {
@@ -24,8 +26,6 @@ class AtividadesController {
         })
 
         if(!funcionario) return res.status(400).send('Funcionário não encontrado')
-        // const agora = new Date()
-          //Salvando a atividade
           const atividade = await prisma.atividades.create({
             data: {
               dtAtividade: dtAtividade,
@@ -67,39 +67,51 @@ class AtividadesController {
         if(!funcionario) return res.status(400).send('Funcionário não encontrado')
         const agora = new Date()
           //Salvando o contato
-          const contato = await prisma.contatoEmpresas.create({
-            data: {
-              empresa: {
-                connect: {
-                  id: idEmpresa
-                }
-              },
-              funcionario: {
-                connect: {
-                  id: idFuncionario
-                }
-              },
-              dtContato,
-              areasInteresse,
-              proxContato,
-              infosContato,
-              statusAtendimento,
-              comentProxContato
+        const contato = await prisma.contatoEmpresas.create({
+          data: {
+            empresa: {
+              connect: {
+                id: idEmpresa
+              }
             },
-          })
+            funcionario: {
+              connect: {
+                id: idFuncionario
+              }
+            },
+            dtContato,
+            areasInteresse,
+            proxContato,
+            infosContato,
+            statusAtendimento,
+            comentProxContato
+          },
+        })
 
-          //Atualizando o ultimo contato na empresa
-          await prisma.empresas.update({
-            where: {id:idEmpresa},
-            data:{
-              funcionarioUltContato: {
-                connect: {
-                  id: idFuncionario
-                }
-              },
-              dtUltContato: agora
-            }
-          })
+        //Atualizando o ultimo contato na empresa
+        await prisma.empresas.update({
+          where: {id:idEmpresa},
+          data:{
+            funcionarioUltContato: {
+              connect: {
+                id: idFuncionario
+              }
+            },
+            dtUltContato: agora
+          }
+        })
+
+        await novoAgendamento({
+          id: null,
+          concluida: false,
+          dtConclusao: null,
+          dtAgendamento: proxContato,
+          idFuncionario,
+          tipoAtividade: CONTATO_EMPRESA,
+          descricao: comentProxContato,
+          idEmpresa,
+          idCandidato: null
+        })
 
         return res.status(200).send(contato)
 
@@ -131,60 +143,71 @@ class AtividadesController {
         if(!funcionario) return res.status(400).send('Funcionário não encontrado')
         const agora = new Date()
           //Salvando o contato
-          const contato = await prisma.contatoCandidatos.create({
-            data: {
-              candidato: {
-                connect: {
-                  id: idCandidato
-                }
-              },
-              funcionario: {
-                connect: {
-                  id: idFuncionario
-                }
-              },
-              dtContato,
-              edital,
-              proxContato,
-              infosContato,
-              statusAtendimento,
-              comentProxContato
+        const contato = await prisma.contatoCandidatos.create({
+          data: {
+            candidato: {
+              connect: {
+                id: idCandidato
+              }
             },
-          })
+            funcionario: {
+              connect: {
+                id: idFuncionario
+              }
+            },
+            dtContato,
+            edital,
+            proxContato,
+            infosContato,
+            statusAtendimento,
+            comentProxContato
+          },
+        })
 
-          //Atualizando o ultimo contato na empresa
-          await prisma.candidatos.update({
-            where: {id:idCandidato},
-            data:{
-              funcionarioUltContato: {
-                connect: {
-                  id: idFuncionario
-                }
-              },
-              dtUltContato: agora,
-              cursosInteresse: {
-                connectOrCreate: cursosInteresse.map((curso: number) => {
-                    return {
-                      where: {
-                        idCurso_idCandidato: {
-                          idCurso: curso,
-                          idCandidato: idCandidato
-                        }
-                      },
-                      create: {
+        //Atualizando o ultimo contato na empresa
+        await prisma.candidatos.update({
+          where: {id:idCandidato},
+          data:{
+            funcionarioUltContato: {
+              connect: {
+                id: idFuncionario
+              }
+            },
+            dtUltContato: agora,
+            cursosInteresse: {
+              connectOrCreate: cursosInteresse.map((curso: number) => {
+                  return {
+                    where: {
+                      idCurso_idCandidato: {
                         idCurso: curso,
-                      },
-                    };
-                }),
-                deleteMany: {
-                  NOT: cursosInteresse?.map((curso: number) => ({ idCandidato: idCandidato, idCurso: curso })),
-                }
-              },
-            }
-          })
+                        idCandidato: idCandidato
+                      }
+                    },
+                    create: {
+                      idCurso: curso,
+                    },
+                  };
+              }),
+              deleteMany: {
+                NOT: cursosInteresse?.map((curso: number) => ({ idCandidato: idCandidato, idCurso: curso })),
+              }
+            },
+          }
+        })
+
+        await novoAgendamento({
+          id: null,
+          concluida: false,
+          dtConclusao: null,
+          dtAgendamento: proxContato,
+          idFuncionario,
+          tipoAtividade: CONTATO_CANDIDATO,
+          descricao: comentProxContato,
+          idEmpresa: null,
+          idCandidato
+        })
 
         return res.status(200).send(contato)
-
       })
     } catch (error) {
       console.error(error)

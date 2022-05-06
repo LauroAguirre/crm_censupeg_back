@@ -68,10 +68,6 @@ class CandidatosController {
             }
           }})
 
-          console.log('Candidato:')
-          console.log(candidato)
-          console.log('----------------------')
-
           return res.status(200).send( candidato )
         })
     } catch (error) {
@@ -230,10 +226,6 @@ class CandidatosController {
           cursosInteresse:true
         }
       })
-
-      console.log('Candidato:')
-      console.log(candidato)
-      console.log('----------------------')
 
       return res.status(200).json(candidato)
     } catch (error) {

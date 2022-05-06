@@ -10,6 +10,8 @@ import unidades from './routes/unidadesRoutes'
 import candidatos from './routes/candidatosRoutes'
 import cursos from './routes/cursosRoutes'
 import empresas from './routes/empresasRoutes'
+import campanhas from './routes/campanhasRoutes'
+import agendamentos from './routes/agendamentoRoutes'
 import { PrismaClient } from '@prisma/client'
 
 require('dotenv').config()
@@ -76,6 +78,8 @@ app.use(unidades)
 app.use(cursos)
 app.use(candidatos)
 app.use(empresas)
+app.use(campanhas)
+app.use(agendamentos)
 
 const server = http.createServer(app)
 
