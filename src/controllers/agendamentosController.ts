@@ -92,6 +92,10 @@ class AgendamentosController {
             lte: new Date(dtFim.toLocaleString())
           }
         },
+        include: {
+          candidato: true,
+          empresa: true,
+        },
         orderBy: {
           dtAgendamento: 'desc'
         }
