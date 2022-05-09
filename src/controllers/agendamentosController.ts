@@ -106,6 +106,7 @@ class AgendamentosController {
 }
 
 export async function novoAgendamento (agendamento:Agendamentos): Promise<Agendamentos> {
+  console.log(agendamento)
   try {
     const novoAgendamento = await prisma.agendamentos.create({
       data: {
@@ -117,16 +118,16 @@ export async function novoAgendamento (agendamento:Agendamentos): Promise<Agenda
         },
         tipoAtividade: agendamento.tipoAtividade,
         descricao: agendamento.descricao,
-        candidato: {
+        candidato: agendamento.idCandidato? {
           connect: {
             id: agendamento.idCandidato
           }
-        },
-        empresa: {
+        }:undefined,
+        empresa: agendamento.idEmpresa ? {
           connect: {
             id: agendamento.idEmpresa
           }
-        }
+        }: undefined
       },
     })
 
