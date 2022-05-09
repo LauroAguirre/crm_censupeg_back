@@ -9,7 +9,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - db:/var/lib/postgresql/data
+      - ./db:/var/lib/postgresql/data
 
   api:
     container_name: crm-api
@@ -23,7 +23,7 @@ services:
     environment:
 
       DB_HOST: db
-      DB_URL: postgresql://postgres:postgres@0.0.0.0:5432/censupeg?schema=public
+      DB_URL: postgresql://postgres:postgres@0.0.0.0:5432/postgres?schema=public
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: postgres
@@ -32,6 +32,4 @@ services:
       - db
     volumes:
       - './:/build'
-volumes:
-  db:
-    driver: local
+
