@@ -56,16 +56,16 @@ class AgendamentosController {
           descricao,
           dtAgendamento,
           tipoAtividade,
-          candidato: {
+          candidato: idCandidato ? {
             connect: {
               id: idCandidato
             }
-          },
-          empresa: {
+          } : undefined,
+          empresa: idEmpresa ? {
             connect: {
               id: idEmpresa
             }
-          }
+          } : undefined
         },
         include:{
           candidato:true,
