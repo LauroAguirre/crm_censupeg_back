@@ -23,6 +23,7 @@ services:
     environment:
 
       DB_HOST: db
+      DB_URL: postgresql://postgres:postgres@0.0.0.0:5432/censupeg?schema=public
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: postgres
