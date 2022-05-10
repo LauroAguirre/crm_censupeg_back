@@ -20,6 +20,8 @@ model Agendamentos {
   idEmpresa     String?      @map("id_empresa")
   concluida     Boolean      @default(false)
   dtConclusao   DateTime?    @map("data_conclusao")
+
+  @@map("agendamentos")
 }
 
 model Atividades {
