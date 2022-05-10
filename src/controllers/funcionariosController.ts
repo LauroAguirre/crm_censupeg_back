@@ -223,78 +223,80 @@ class FuncionariosController {
       const {dtInicio, dtFim} = req.query
       const { idFuncionario } = req.params
 
-      const dataInicio = new Date(dayjs(dtInicio.toString()).format('YYYY-MM-DD'))
-      const dataFim = new Date(dayjs(dtFim.toString()).add(1,'day').format('YYYY-MM-DD'))
+      const dataInicio = new Date(dayjs(dtInicio.toString()).format('YYYY-MM-DD')).toLocaleString()
+      const dataFim = new Date(dayjs(dtFim.toString()).add(1,'day').format('YYYY-MM-DD')).toLocaleString()
 
-      const contatosCandidatos = await prisma.contatoCandidatos.findMany({
-        where: {
-          idFuncionario,
-          dtContato: {
-            gte: dataInicio,
-            lte: dataFim
-          }
-        },
-        include:{
-          funcionario:true,
-          candidato: true
-        }
-      })
+      const atividades = await listarAtividadesFuncionario( idFuncionario, dataInicio, dataFim)
 
-      const contatosEmpresas = await prisma.contatoEmpresas.findMany({
-        where: {
-          idFuncionario,
-          dtContato: {
-            gte: dataInicio,
-            lte: dataFim
-          }
-        },
-        include:{
-          funcionario:true,
-          empresa: true
-        }
-      })
+      // const contatosCandidatos = await prisma.contatoCandidatos.findMany({
+      //   where: {
+      //     idFuncionario,
+      //     dtContato: {
+      //       gte: dataInicio,
+      //       lte: dataFim
+      //     }
+      //   },
+      //   include:{
+      //     funcionario:true,
+      //     candidato: true
+      //   }
+      // })
 
-      const outrasAtividades = await prisma.atividades.findMany({
-        where: {
-          idFuncionario,
-          dtAtividade: {
-            gte: dataInicio,
-            lte: dataFim
-          }
-        },
-        include:{
-          funcionario:true
-        }
-      })
+      // const contatosEmpresas = await prisma.contatoEmpresas.findMany({
+      //   where: {
+      //     idFuncionario,
+      //     dtContato: {
+      //       gte: dataInicio,
+      //       lte: dataFim
+      //     }
+      //   },
+      //   include:{
+      //     funcionario:true,
+      //     empresa: true
+      //   }
+      // })
 
-      let atividades = []
+      // const outrasAtividades = await prisma.atividades.findMany({
+      //   where: {
+      //     idFuncionario,
+      //     dtAtividade: {
+      //       gte: dataInicio,
+      //       lte: dataFim
+      //     }
+      //   },
+      //   include:{
+      //     funcionario:true
+      //   }
+      // })
 
-      contatosCandidatos.forEach(contato =>{
-        atividades.push({
-          dtAtividade: contato.dtContato,
-          idContato: contato.idCandidato,
-          nome: contato.candidato.nome,
-          detalhes: contato.edital ? `${contato.edital} - ${contato.infosContato}` : contato.infosContato
-        })
-      })
-      contatosEmpresas.forEach(contato =>{
-        atividades.push({
-          dtAtividade: contato.dtContato,
-          idContato: contato.idEmpresa,
-          nome: contato.empresa.nome,
-          detalhes: contato.areasInteresse ? `Interesse em ${contato.areasInteresse}. ${contato.infosContato}` : contato.infosContato
-        })
-      })
-      outrasAtividades.forEach(atividade =>{
-        atividades.push({
-          dtAtividade: atividade.dtAtividade,
-          detalhes: atividade.descricao
-        })
-      })
+      // let atividades = []
 
-      atividades = atividades.sort((a, b) => {
-        return b.dtAtividade - a.dtAtividade
-      })
+      // contatosCandidatos.forEach(contato =>{
+      //   atividades.push({
+      //     dtAtividade: contato.dtContato,
+      //     idContato: contato.idCandidato,
+      //     nome: contato.candidato.nome,
+      //     detalhes: contato.edital ? `${contato.edital} - ${contato.infosContato}` : contato.infosContato
+      //   })
+      // })
+      // contatosEmpresas.forEach(contato =>{
+      //   atividades.push({
+      //     dtAtividade: contato.dtContato,
+      //     idContato: contato.idEmpresa,
+      //     nome: contato.empresa.nome,
+      //     detalhes: contato.areasInteresse ? `Interesse em ${contato.areasInteresse}. ${contato.infosContato}` : contato.infosContato
+      //   })
+      // })
+      // outrasAtividades.forEach(atividade =>{
+      //   atividades.push({
+      //     dtAtividade: atividade.dtAtividade,
+      //     detalhes: atividade.descricao
+      //   })
+      // })
+
+      // atividades = atividades.sort((a, b) => {
+      //   return b.dtAtividade - a.dtAtividade
+      // })
 
       return res.status(200).send(atividades)
     } catch (error) {
@@ -305,3 +307,77 @@ class FuncionariosController {
 }
 
 export default new FuncionariosController()
+
+export const listarAtividadesFuncionario = async ( idFuncionario:string, dataInicio: string, dataFim: string) => {
+  const contatosCandidatos = await prisma.contatoCandidatos.findMany({
+    where: {
+      idFuncionario,
+      dtContato: {
+        gte: dataInicio,
+        lte: dataFim
+      }
+    },
+    include:{
+      funcionario:true,
+      candidato: true
+    }
+  })
+
+  const contatosEmpresas = await prisma.contatoEmpresas.findMany({
+    where: {
+      idFuncionario,
+      dtContato: {
+        gte: dataInicio,
+        lte: dataFim
+      }
+    },
+    include:{
+      funcionario:true,
+      empresa: true
+    }
+  })
+
+  const outrasAtividades = await prisma.atividades.findMany({
+    where: {
+      idFuncionario,
+      dtAtividade: {
+        gte: dataInicio,
+        lte: dataFim
+      }
+    },
+    include:{
+      funcionario:true
+    }
+  })
+
+  let atividades = []
+
+  contatosCandidatos.forEach(contato =>{
+    atividades.push({
+      dtAtividade: contato.dtContato,
+      idContato: contato.idCandidato,
+      nome: contato.candidato.nome,
+      detalhes: contato.edital ? `${contato.edital} - ${contato.infosContato}` : contato.infosContato
+    })
+  })
+  contatosEmpresas.forEach(contato =>{
+    atividades.push({
+      dtAtividade: contato.dtContato,
+      idContato: contato.idEmpresa,
+      nome: contato.empresa.nome,
+      detalhes: contato.areasInteresse ? `Interesse em ${contato.areasInteresse}. ${contato.infosContato}` : contato.infosContato
+    })
+  })
+  outrasAtividades.forEach(atividade =>{
+    atividades.push({
+      dtAtividade: atividade.dtAtividade,
+      detalhes: atividade.descricao
+    })
+  })
+
+  atividades = atividades.sort((a, b) => {
+    return b.dtAtividade - a.dtAtividade
+  })
+
+  return atividades
+}

@@ -39,12 +39,14 @@ model Campanhas {
   unidades     CampanhasUnidades[]
   redesSociais CampanhasRedesSociais[]
   Candidatos   Candidatos[]
+
+  @@map("campanhas")
 }
 
 model CampanhasRedesSociais {
   Campanhas    Campanhas?    @relation(fields: [idCampanha], references: [id])
   idCampanha   String        @map("id_campanha")
-  RedesSociais RedesSociais? @relation(fields: [idRede], references: [id])
+  redesSociais RedesSociais? @relation(fields: [idRede], references: [id])
   idRede       Int           @map("id_rede_social")
 
   @@id([idCampanha, idRede])

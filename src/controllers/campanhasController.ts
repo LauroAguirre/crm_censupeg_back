@@ -90,7 +90,7 @@ class CampanhasController {
 
   async pesquisarCampanhas (req: Request, res: Response): Promise<Response> {
     try {
-      const { pagina, porPagina, nome, idZappier } = req.body
+      const { pagina, porPagina, nome, idZappier } = req.query
 
       const completo = await prisma.campanhas.findMany({
         where: {
@@ -111,8 +111,12 @@ class CampanhasController {
           nome: 'asc'
         },
         include: {
-          redesSociais:true,
-          unidades: true
+          redesSociais: {
+            include: {
+              redesSociais: true
+            }
+          },
+          unidades: true,
         },
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),

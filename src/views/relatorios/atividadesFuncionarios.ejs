@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
-  <title>Acesso ao CRM</title>
+  <title>Relatório de atividades</title>
 </head>
 <style>
   body{
@@ -25,21 +25,11 @@
   }
 </style>
 <body class="m-5 text-sm">
-  <p>Olá, <%= patient.patName %>!</p>
+    <h1>Atividades de <%= funcionario.nome %></h1>
+    <hr />
+    <% atividades.forEach(atividade => {%>
+      <strong>CPF:</strong><span> <%= patient.usrId.usrCpfCnpj.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/,'$1.$2.$3-$4') %></span>
 
-  <p>
-    <span>Para acessar, basta clicar no link abaixo e utilizar seu e-mail e a seguinte senha para acesso:</span>
-    <strong style="font-size: 1,5rem;"><%= tempPassword %></strong>
-  </p>
-
-  <p>Lembre-se que esta é uma senha temporária. Você deverá cadastrar uma nova senha após o primeiro acesso.</p>
-  <br />
-  <br />
-  <a href="https://medlife-front.vercel.app/login" target="_blank">Acessar o sistema</a>
-  <br />
-  <br />
-  <p>Este é um e-mail automático do sistema. Por favor não responda.</p>
-  <p>Doca®</p>
-
+    <%}); %>
 </body>
 </html>
