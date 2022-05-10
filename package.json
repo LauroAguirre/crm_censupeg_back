@@ -7,7 +7,7 @@
   "author": "Censupeg - CoopTeam",
   "private": true,
   "scripts": {
-    "build": "rimraf ./build && tsc && yarn copyviews && yarn prisma migrate run",
+    "build": "rimraf ./build && tsc && yarn copyviews && yarn prisma migrate dev",
     "commit": "cz&git push",
     "copyviews": "copyfiles  -u 2 src/views/*.ejs build/views",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules  src/server.ts",
