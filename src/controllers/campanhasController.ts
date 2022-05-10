@@ -116,7 +116,11 @@ class CampanhasController {
               redesSociais: true
             }
           },
-          unidades: true,
+          unidades: {
+            include:{
+              Unidades: true
+            }
+          },
         },
         take: Number(porPagina),
         skip: ( Number(pagina) - 1) * Number(porPagina),
