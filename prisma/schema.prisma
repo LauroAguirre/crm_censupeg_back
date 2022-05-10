@@ -238,6 +238,8 @@ model RedesSociais {
   id                    Int                     @id @default(autoincrement()) @map("id_rede_social")
   nome                  String
   CampanhasRedesSociais CampanhasRedesSociais[]
+
+  @@map("redes_sociais")
 }
 
 model RefreshKeys {
