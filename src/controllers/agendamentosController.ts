@@ -56,16 +56,16 @@ class AgendamentosController {
           descricao,
           dtAgendamento,
           tipoAtividade,
-          candidato: {
+          candidato: idCandidato ? {
             connect: {
               id: idCandidato
             }
-          },
-          empresa: {
+          } : undefined,
+          empresa: idEmpresa ? {
             connect: {
               id: idEmpresa
             }
-          }
+          } : undefined
         },
         include:{
           candidato:true,
@@ -92,6 +92,10 @@ class AgendamentosController {
             lte: new Date(dtFim.toLocaleString())
           }
         },
+        include: {
+          candidato: true,
+          empresa: true,
+        },
         orderBy: {
           dtAgendamento: 'desc'
         }
@@ -117,16 +121,16 @@ export async function novoAgendamento (agendamento:any): Promise<any> {
         },
         tipoAtividade: agendamento.tipoAtividade,
         descricao: agendamento.descricao,
-        candidato: {
+        candidato: agendamento.idCandidato? {
           connect: {
             id: agendamento.idCandidato
           }
-        },
-        empresa: {
+        }:undefined,
+        empresa: agendamento.idEmpresa ? {
           connect: {
             id: agendamento.idEmpresa
           }
-        }
+        }: undefined
       },
     })
 

@@ -124,6 +124,22 @@ class CampanhasController {
       return res.status(500).json(error)
     }
   }
+
+  async getRedesSociais (req:Request, res:Response): Promise<Response>{
+    try {
+      const redesSociais = await prisma.redesSociais.findMany({
+         orderBy:{
+           nome: 'asc'
+         }
+      })
+
+      return res.status(200).send(redesSociais)
+
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
 }
 
 export default new CampanhasController()
