@@ -176,6 +176,8 @@ class CandidatosController {
         outrosCursosInteresse, outrasInfos, periodos, sexo, uf } = req.body
       const { idCandidato } = req.params
 
+      const cursosList = cursosInteresse ? cursosInteresse : []
+
       const candidato = await prisma.candidatos.update({
         where: {id: idCandidato.toString()},
         data:{
@@ -204,7 +206,7 @@ class CandidatosController {
           interesseEad: formato ? formato.findIndex((per: string) => per === 'EAD') > -1 : false,
           interesseHibrido: formato ? formato.findIndex((per: string) => per === 'Híbrido') > -1 : false,
           cursosInteresse: {
-            connectOrCreate: cursosInteresse.map((curso: number) => {
+            connectOrCreate: cursosList.map((curso: number) => {
                 return {
                   where: {
                     idCurso_idCandidato: {
@@ -218,7 +220,7 @@ class CandidatosController {
                 };
             }),
             deleteMany: {
-              NOT: cursosInteresse?.map((curso: number) => ({ idCandidato: idCandidato.toString(), idCurso: curso })),
+              NOT: cursosList.map((curso: number) => ({ idCandidato: idCandidato.toString(), idCurso: curso })),
             }
           },
         },
