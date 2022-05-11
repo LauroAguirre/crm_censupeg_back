@@ -2,6 +2,8 @@ import http from 'http'
 import cors from 'cors'
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import dayjs from 'dayjs'
+import 'dayjs/locale/pt-br'
 
 import routes from './routes/defaultRoutes'
 import auth from './routes/authRoutes'
@@ -15,6 +17,7 @@ import agendamentos from './routes/agendamentoRoutes'
 import { PrismaClient } from '@prisma/client'
 
 require('dotenv').config()
+dayjs.locale('pt-br')
 
 function normalizePort (val:string) {
   const port = parseInt(val, 10)

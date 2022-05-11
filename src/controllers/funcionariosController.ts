@@ -1,10 +1,15 @@
 import { Request, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import os from 'os'
+import ejs from 'ejs'
+import dayjs from 'dayjs'
+import path from 'path'
 import bcrypt from 'bcryptjs'
+import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
+
 import { JWTHeader } from '../providers/JWTHeader'
 import gerarSenha from '../providers/gerarSenha'
-import dayjs from 'dayjs'
+import { generatePdf } from 'src/services/createPdf'
 
 const prisma = new PrismaClient()
 
@@ -144,7 +149,6 @@ class FuncionariosController {
   }
 
   async editarFuncionario (req: Request, res: Response): Promise<Response> {
-    console.log('Editando funcionário...')
     try {
       const { nome, telefone, email, perfilFuncionario, ativo, cpf } = req.body
       const { idFuncionario } = req.params
@@ -160,9 +164,6 @@ class FuncionariosController {
           cpf: cpf.replace(/\D/g, ''),
         }
       })
-      console.log('Funcionário:')
-      console.log(funcionario)
-      console.log('----------------------')
 
       delete funcionario.senha
 
@@ -220,85 +221,53 @@ class FuncionariosController {
 
   async getAtividadesFuncionario (req: Request, res: Response): Promise<Response> {
     try {
-      const {dtInicio, dtFim} = req.query
+      const {dtInicio, dtFim } = req.query
       const { idFuncionario } = req.params
 
-      const dataInicio = new Date(dayjs(dtInicio.toString()).format('YYYY-MM-DD')).toLocaleString()
-      const dataFim = new Date(dayjs(dtFim.toString()).add(1,'day').format('YYYY-MM-DD')).toLocaleString()
+      console.log(req.query)
+
+      const dataInicio = new Date(dayjs(dtInicio.toString()).format('YYYY-MM-DD'))
+      const dataFim = new Date(dayjs(dtFim.toString()).add(1,'day').format('YYYY-MM-DD'))
 
       const atividades = await listarAtividadesFuncionario( idFuncionario, dataInicio, dataFim)
 
-      // const contatosCandidatos = await prisma.contatoCandidatos.findMany({
-      //   where: {
-      //     idFuncionario,
-      //     dtContato: {
-      //       gte: dataInicio,
-      //       lte: dataFim
-      //     }
-      //   },
-      //   include:{
-      //     funcionario:true,
-      //     candidato: true
-      //   }
-      // })
-
-      // const contatosEmpresas = await prisma.contatoEmpresas.findMany({
-      //   where: {
-      //     idFuncionario,
-      //     dtContato: {
-      //       gte: dataInicio,
-      //       lte: dataFim
-      //     }
-      //   },
-      //   include:{
-      //     funcionario:true,
-      //     empresa: true
-      //   }
-      // })
-
-      // const outrasAtividades = await prisma.atividades.findMany({
-      //   where: {
-      //     idFuncionario,
-      //     dtAtividade: {
-      //       gte: dataInicio,
-      //       lte: dataFim
-      //     }
-      //   },
-      //   include:{
-      //     funcionario:true
-      //   }
-      // })
-
-      // let atividades = []
-
-      // contatosCandidatos.forEach(contato =>{
-      //   atividades.push({
-      //     dtAtividade: contato.dtContato,
-      //     idContato: contato.idCandidato,
-      //     nome: contato.candidato.nome,
-      //     detalhes: contato.edital ? `${contato.edital} - ${contato.infosContato}` : contato.infosContato
-      //   })
-      // })
-      // contatosEmpresas.forEach(contato =>{
-      //   atividades.push({
-      //     dtAtividade: contato.dtContato,
-      //     idContato: contato.idEmpresa,
-      //     nome: contato.empresa.nome,
-      //     detalhes: contato.areasInteresse ? `Interesse em ${contato.areasInteresse}. ${contato.infosContato}` : contato.infosContato
-      //   })
-      // })
-      // outrasAtividades.forEach(atividade =>{
-      //   atividades.push({
-      //     dtAtividade: atividade.dtAtividade,
-      //     detalhes: atividade.descricao
-      //   })
-      // })
-
-      // atividades = atividades.sort((a, b) => {
-      //   return b.dtAtividade - a.dtAtividade
-      // })
-
       return res.status(200).send(atividades)
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json(error)
+    }
+  }
+
+  async getRelAtividadesFuncionario (req: Request, res: Response): Promise<Response>{
+    try {
+      const {dtInicio, dtFim } = req.query
+      const { idFuncionario } = req.params
+
+      console.log(req.query)
+      const templateRel = path.join(__dirname, '../views/relatorios/atividadesFuncionarios.ejs')
+
+      const dataInicio = new Date(dayjs(dtInicio.toString()).format('YYYY-MM-DD'))
+      const dataFim = new Date(dayjs(dtFim.toString()).add(1,'day').format('YYYY-MM-DD'))
+
+      const atividades = await listarAtividadesFuncionario( idFuncionario, dataInicio, dataFim)
+      const funcionario = await prisma.funcionarios.findUnique({
+        where:{
+          id: idFuncionario
+        }
+      })
+
+      ejs.renderFile(templateRel, { dayjs, funcionario, atividades, dtInicio:dayjs(dtInicio.toString()), dtFim: dayjs(dtFim.toString()) }, async (err, html) => {
+        if (err) {
+          console.log('ERRO AO CARREGAR EJS')
+          console.log(err)
+          throw new Error(JSON.stringify(err))
+        }
+
+        const osTmpDir = os.tmpdir()
+        const pdf = await generatePdf(html, `${osTmpDir}/atividades_${funcionario.nome}`, 'atividades', false)
+
+        return res.contentType('application/pdf').status(200).send(pdf)
+      })
     } catch (error) {
       console.error(error)
       return res.status(500).json(error)
@@ -308,7 +277,7 @@ class FuncionariosController {
 
 export default new FuncionariosController()
 
-export const listarAtividadesFuncionario = async ( idFuncionario:string, dataInicio: string, dataFim: string) => {
+export const listarAtividadesFuncionario = async ( idFuncionario:string, dataInicio: Date, dataFim: Date) => {
   const contatosCandidatos = await prisma.contatoCandidatos.findMany({
     where: {
       idFuncionario,
@@ -354,6 +323,7 @@ export const listarAtividadesFuncionario = async ( idFuncionario:string, dataIni
 
   contatosCandidatos.forEach(contato =>{
     atividades.push({
+      tipo: 1,
       dtAtividade: contato.dtContato,
       idContato: contato.idCandidato,
       nome: contato.candidato.nome,
@@ -362,6 +332,7 @@ export const listarAtividadesFuncionario = async ( idFuncionario:string, dataIni
   })
   contatosEmpresas.forEach(contato =>{
     atividades.push({
+      tipo: 2,
       dtAtividade: contato.dtContato,
       idContato: contato.idEmpresa,
       nome: contato.empresa.nome,
@@ -370,6 +341,7 @@ export const listarAtividadesFuncionario = async ( idFuncionario:string, dataIni
   })
   outrasAtividades.forEach(atividade =>{
     atividades.push({
+      tipo: 3,
       dtAtividade: atividade.dtAtividade,
       detalhes: atividade.descricao
     })

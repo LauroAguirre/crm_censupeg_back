@@ -11,6 +11,7 @@ router.get('/logado', authMiddleware, funcionariosController.getFuncionarioLogad
 router.get('/getFuncionariosUnidade', authMiddleware, funcionariosController.getFuncionariosUnidade)
 router.get('/pesquisarFuncionarios', authMiddleware, funcionariosController.pesquisarFuncionarios)
 router.get('/funcionarios/:idFuncionario/getAtividades', authMiddleware, funcionariosController.getAtividadesFuncionario)
+router.get('/funcionarios/:idFuncionario/relAtividades', authMiddleware, funcionariosController.getRelAtividadesFuncionario)
 
 
 router.put('/funcionarios/:idFuncionario/editar', authMiddleware, funcionariosController.editarFuncionario)
