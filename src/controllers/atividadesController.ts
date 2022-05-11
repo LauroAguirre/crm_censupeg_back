@@ -126,9 +126,10 @@ class AtividadesController {
     try {
       const { idCandidato, dtContato, edital, cursosInteresse, proxContato, infosContato, statusAtendimento, comentProxContato } = req.body
 
-
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
+
+      const cursosList = cursosInteresse ? cursosInteresse : []
 
       verify(token, process.env.JWT_TOKEN, async (error, headerToken:JWTHeader) => {
         if (error) {
@@ -175,7 +176,7 @@ class AtividadesController {
             },
             dtUltContato: agora,
             cursosInteresse: {
-              connectOrCreate: cursosInteresse.map((curso: number) => {
+              connectOrCreate: cursosList.map((curso: number) => {
                   return {
                     where: {
                       idCurso_idCandidato: {
@@ -189,7 +190,7 @@ class AtividadesController {
                   };
               }),
               deleteMany: {
-                NOT: cursosInteresse?.map((curso: number) => ({ idCandidato: idCandidato, idCurso: curso })),
+                NOT: cursosList.map((curso: number) => ({ idCandidato: idCandidato, idCurso: curso })),
               }
             },
           }

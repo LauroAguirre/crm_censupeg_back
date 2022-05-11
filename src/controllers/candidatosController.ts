@@ -143,7 +143,7 @@ class CandidatosController {
           fone1: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           fone2: fone ? {contains: fone.toString().replace(/\D/g, '')} : undefined,
           cpf: cpf ? {contains: cpf.toString().replace(/\D/g, '')} : undefined,
-          escolaridade: escolaridade ? Number(escolaridade) : null,
+          escolaridade: escolaridade ? Number(escolaridade) : undefined,
           cidade: cidade ? {contains: cidade.toString(), mode: 'insensitive'} : undefined,
           uf: uf ? {contains: uf.toString(), mode: 'insensitive'} : undefined,
           dtNascimento: {
