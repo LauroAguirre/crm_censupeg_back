@@ -101,17 +101,19 @@ class AtividadesController {
           }
         })
 
-        await novoAgendamento({
-          id: null,
-          concluida: false,
-          dtConclusao: null,
-          dtAgendamento: proxContato,
-          idFuncionario,
-          tipoAtividade: CONTATO_EMPRESA,
-          descricao: comentProxContato,
-          idEmpresa,
-          idCandidato: undefined
-        })
+        if (proxContato){
+          await novoAgendamento({
+            id: null,
+            concluida: false,
+            dtConclusao: null,
+            dtAgendamento: proxContato,
+            idFuncionario,
+            tipoAtividade: CONTATO_EMPRESA,
+            descricao: comentProxContato,
+            idEmpresa,
+            idCandidato: undefined
+          })
+        }
 
         return res.status(200).send(contato)
 
@@ -196,17 +198,19 @@ class AtividadesController {
           }
         })
 
-        await novoAgendamento({
-          id: null,
-          concluida: false,
-          dtConclusao: null,
-          dtAgendamento: proxContato,
-          idFuncionario,
-          tipoAtividade: CONTATO_CANDIDATO,
-          descricao: comentProxContato,
-          idEmpresa: undefined,
-          idCandidato
-        })
+        if(proxContato){
+          await novoAgendamento({
+            id: null,
+            concluida: false,
+            dtConclusao: null,
+            dtAgendamento: proxContato,
+            idFuncionario,
+            tipoAtividade: CONTATO_CANDIDATO,
+            descricao: comentProxContato,
+            idEmpresa: undefined,
+            idCandidato
+          })
+        }
 
         return res.status(200).send(contato)
       })
