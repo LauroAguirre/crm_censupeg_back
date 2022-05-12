@@ -76,7 +76,7 @@ model Candidatos {
   dtNascimento            DateTime?         @map("dt_nascimento")
   escolaridade            Int?
   formacao                String?
-  cursoAtual              String?           @map("curso_atuao")
+  cursoAtual              String?           @map("curso_atual")
   cidade                  String?
   uf                      String?
   alunoCensupeg           Boolean           @default(false) @map("aluno_censupeg")
@@ -107,19 +107,19 @@ model Candidatos {
 }
 
 model ContatoCandidatos {
-  idContato         Int          @id @default(autoincrement())
-  candidato         Candidatos   @relation(fields: [idCandidato], references: [id])
-  idCandidato       String       @map("id_candidato")
-  funcionario       Funcionarios @relation(fields: [idFuncionario], references: [id])
-  idFuncionario     String       @map("id_funcionario")
-  dtContato         DateTime     @default(now()) @map("dt_contato")
+  idContato         Int               @id @default(autoincrement())
+  candidato         Candidatos        @relation(fields: [idCandidato], references: [id])
+  idCandidato       String            @map("id_candidato")
+  funcionario       Funcionarios      @relation(fields: [idFuncionario], references: [id])
+  idFuncionario     String            @map("id_funcionario")
+  dtContato         DateTime          @default(now()) @map("dt_contato")
   edital            String?
-  proxContato       DateTime?    @map("proximo_contato")
-  infosContato      String       @map("infos_contato")
-  statusAtendimento Int          @map("status_atendimento")
-  comentProxContato String?      @map("comentarios_proximo_contato")
+  proxContato       DateTime?         @map("proximo_contato")
+  infosContato      String            @map("infos_contato")
+  statusAtendimento Int               @map("status_atendimento")
+  comentProxContato String?           @map("comentarios_proximo_contato")
+  CursosInteresse   CursosInteresse[]
 
-  CursosInteresse CursosInteresse[]
   // @@id([idContato, idCandidato, idFuncionario])
   @@map("contato_candidatos")
 }
@@ -205,36 +205,35 @@ model Empresas {
   idFuncionarioUltContato String?           @map("id_funcionario_ultimo_contato")
   dtUltContato            DateTime?         @map("dt_ultimo_contato")
   contatos                ContatoEmpresas[]
+  Agendamentos            Agendamentos[]
 
-  Agendamentos Agendamentos[]
   @@map("empresas")
 }
 
 model Funcionarios {
-  id                    String            @id @default(uuid())
-  dtCadastro            DateTime          @default(now()) @map("dt_cadastro")
-  dtAtualizacao         DateTime          @updatedAt @map("dt_atualizacao")
-  nome                  String            @db.VarChar(80)
+  id                    String              @id @default(uuid())
+  dtCadastro            DateTime            @default(now()) @map("dt_cadastro")
+  dtAtualizacao         DateTime            @updatedAt @map("dt_atualizacao")
+  nome                  String              @db.VarChar(80)
   cpf                   String?
   telefone              String?
-  email                 String            @db.VarChar(120)
-  senha                 String            @db.VarChar(80)
-  senhaTemp             Boolean           @default(true) @map("senha_temp")
-  perfilFuncionario     Int               @map("perfil_funcionario")
-  ativo                 Boolean           @default(true)
-  unidades              Unidades?         @relation(fields: [unidadesId], references: [id])
-  unidadesId            Int?              @map("id_unidade")
-  candidatosCadastrados Candidatos[]      @relation("funcionarioCadCandidato")
-  ultContatoCandidato   Candidatos[]      @relation("funcionarioUltContatoCandidato")
-  empresasCadastradas   Empresas[]        @relation("funcionarioCadEmpresa")
-  ultContatoEmpresa     Empresas[]        @relation("funcionarioUltContatoEmpresa")
-  RefreshKeys           RefreshKeys[]     @relation("funcionarioRefreshKey")
+  email                 String              @db.VarChar(120)
+  senha                 String              @db.VarChar(80)
+  senhaTemp             Boolean             @default(true) @map("senha_temp")
+  perfilFuncionario     Int                 @map("perfil_funcionario")
+  ativo                 Boolean             @default(true)
+  unidades              Unidades?           @relation(fields: [unidadesId], references: [id])
+  unidadesId            Int?                @map("id_unidade")
+  candidatosCadastrados Candidatos[]        @relation("funcionarioCadCandidato")
+  ultContatoCandidato   Candidatos[]        @relation("funcionarioUltContatoCandidato")
+  empresasCadastradas   Empresas[]          @relation("funcionarioCadEmpresa")
+  ultContatoEmpresa     Empresas[]          @relation("funcionarioUltContatoEmpresa")
+  RefreshKeys           RefreshKeys[]       @relation("funcionarioRefreshKey")
   ContatoEmpresas       ContatoEmpresas[]
+  ContatoCandidatos     ContatoCandidatos[]
+  Atividades            Atividades[]
+  Agendamentos          Agendamentos[]
 
-
-  ContatoCandidatos ContatoCandidatos[]
-  Atividades        Atividades[]
-  Agendamentos      Agendamentos[]
   @@map("funcionarios")
 }
 
