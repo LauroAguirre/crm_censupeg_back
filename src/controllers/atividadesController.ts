@@ -10,7 +10,7 @@ const CONTATO_EMPRESA = 2
 class AtividadesController {
   async atividade (req: Request, res: Response): Promise<Response>{
     try {
-      const { descricao, dtAtividade } = req.body
+      const { descricao, dtAtividade, idAgendamento } = req.body
 
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
@@ -37,6 +37,19 @@ class AtividadesController {
               descricao
             },
           })
+
+        //Atualiza o status do agendamento (quando houver)
+        if(idAgendamento){
+          await prisma.agendamentos.update({
+            where: {
+              id: idAgendamento
+            },
+            data:{
+              concluida: true,
+              dtConclusao: new Date()
+            }
+          })
+        }
 
         return res.status(200).send(atividade)
 
