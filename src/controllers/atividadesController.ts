@@ -49,7 +49,7 @@ class AtividadesController {
 
   async contatoEmpresa (req: Request, res: Response): Promise<Response> {
     try {
-      const { idEmpresa, dtContato, areasInteresse, proxContato, infosContato, statusAtendimento, comentProxContato } = req.body
+      const { idEmpresa, dtContato, areasInteresse, proxContato, infosContato, statusAtendimento, comentProxContato, idAgendamento } = req.body
 
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
@@ -101,6 +101,19 @@ class AtividadesController {
           }
         })
 
+        //Atualiza o status do agendamento (quando houver)
+        if(idAgendamento){
+          await prisma.agendamentos.update({
+            where: {
+              id: idAgendamento
+            },
+            data:{
+              concluida: true,
+              dtConclusao: new Date()
+            }
+          })
+        }
+
         if (proxContato){
           await novoAgendamento({
             id: null,
@@ -126,7 +139,7 @@ class AtividadesController {
 
   async contatoCandidato (req: Request, res: Response): Promise<Response> {
     try {
-      const { idCandidato, dtContato, edital, cursosInteresse, proxContato, infosContato, statusAtendimento, comentProxContato } = req.body
+      const { idCandidato, dtContato, edital, cursosInteresse, proxContato, infosContato, statusAtendimento, comentProxContato, idAgendamento } = req.body
 
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
@@ -197,6 +210,19 @@ class AtividadesController {
             },
           }
         })
+
+        //Atualiza o status do agendamento (quando houver)
+        if(idAgendamento){
+          await prisma.agendamentos.update({
+            where: {
+              id: idAgendamento
+            },
+            data:{
+              concluida: true,
+              dtConclusao: new Date()
+            }
+          })
+        }
 
         if(proxContato){
           await novoAgendamento({
