@@ -240,7 +240,7 @@ class AtividadesController {
           })
         }
 
-        if(dtMatricula) await registrarMatricula({idCandidato, dtMatricula, idCurso: idCursoMatricula, idFuncionario} )
+        if(dtMatricula) await registrarMatricula({idCandidato, dtMatricula, idCurso: idCursoMatricula, idFuncionario, idContato: contato.idContato} )
 
         if(proxContato){
           await novoAgendamento({

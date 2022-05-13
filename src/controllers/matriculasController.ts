@@ -13,7 +13,15 @@ interface DadosMatricula{
 class MatriculasController {
  async getMatriculasPorPeriodo(req:Request, res:Response): Promise<Response> {
    try {
-    const matriculas = await prisma.matriculas.findMany()
+     const {dtInicio, dtFim} = req.query
+    const matriculas = await prisma.matriculas.findMany({
+      where:{
+        dtMatricula: {
+          gte: new Date(dtInicio.toLocaleString()),
+          lte: new Date(dtFim.toLocaleString())
+        }
+      }
+    })
 
     return res.status(200).send(matriculas)
    } catch (error) {
@@ -60,7 +68,7 @@ export const registrarMatricula = async (matricula:DadosMatricula):Promise<Matri
       },
       data: {
         alunoCensupeg: true,
-        cursoAtual: perfilCandidato.cursoAtual.length > 0 ? `${perfilCandidato.cursoAtual}, ${curso.nome}` : curso.nome
+        cursoAtual: perfilCandidato.cursoAtual?.length > 0 ? `${perfilCandidato.cursoAtual}, ${curso.nome}` : curso.nome
       }
     })
 

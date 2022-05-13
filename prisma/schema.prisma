@@ -243,17 +243,17 @@ model Funcionarios {
 }
 
 model Matriculas {
-  id                     Int          @id @default(autoincrement()) @map("id_matricula")
-  candidato              Candidatos   @relation(fields: [idCandidato], references: [id])
-  idCandidato            String       @map("id_candidato")
-  dtMatricula            DateTime     @map("data_matricula")
-  curso                  Cursos       @relation(fields: [idCurso], references: [id])
-  idCurso                Int          @map("id_curso")
-  funcionarioResponsavel Funcionarios @relation(fields: [idFuncResponsavel], references: [id])
-  idFuncResponsavel      String       @map("id_funcionario_responsavel")
+  id                     Int                 @id @default(autoincrement()) @map("id_matricula")
+  candidato              Candidatos          @relation(fields: [idCandidato], references: [id])
+  idCandidato            String              @map("id_candidato")
+  dtMatricula            DateTime            @map("data_matricula")
+  curso                  Cursos              @relation(fields: [idCurso], references: [id])
+  idCurso                Int                 @map("id_curso")
+  funcionarioResponsavel Funcionarios        @relation(fields: [idFuncResponsavel], references: [id])
+  idFuncResponsavel      String              @map("id_funcionario_responsavel")
+  ContatoCandidatos      ContatoCandidatos[]
 
   @@map("matriculas")
-  ContatoCandidatos ContatoCandidatos[]
 }
 
 model RedesSociais {
