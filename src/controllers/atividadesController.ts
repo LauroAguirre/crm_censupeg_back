@@ -4,6 +4,7 @@ import { verify } from 'jsonwebtoken'
 import { JWTHeader } from '../providers/JWTHeader'
 import { novoAgendamento } from './agendamentosController'
 import { connect } from 'http2'
+import { registrarMatricula } from './matriculasController'
 
 const prisma = new PrismaClient()
 const CONTATO_CANDIDATO = 1
@@ -373,60 +374,6 @@ class AtividadesController {
       return res.status(500).json(error)
     }
   }
-}
-
-interface DadosMatricula{
-  idCandidato: string,
-  idCurso: number,
-  dtMatricula: Date,
-  idFuncionario: string
-}
-export const registrarMatricula = async (matricula:DadosMatricula):Promise<Matriculas> => {
-  const {idCandidato, idCurso, dtMatricula, idFuncionario} = matricula
-  try {
-    const novaMatricula = await prisma.matriculas.create({
-      data:{
-        dtMatricula,
-        candidato: {
-          connect:{
-            id: idCandidato
-          }
-        },
-        curso: {
-          connect: {
-            id: idCurso
-          }
-        },
-        funcionarioResponsavel: {
-          connect: {
-            id: idFuncionario
-          }
-        }
-      },
-      include:{
-        candidato: true,
-        curso: true,
-      }
-    })
-
-    const perfilCandidato = await prisma.candidatos.findUnique({where: {id: idCandidato}})
-    const curso = await prisma.cursos.findUnique({where: {id: idCurso}})
-
-    await prisma.candidatos.update({
-      where: {
-        id: idCandidato
-      },
-      data: {
-        alunoCensupeg: true,
-        cursoAtual: perfilCandidato.cursoAtual.length > 0 ? `${perfilCandidato.cursoAtual}, ${curso.nome}` : curso.nome
-      }
-    })
-
-    return novaMatricula
-  } catch (error) {
-    throw new Error(error)
-  }
-
 }
 
 export default new AtividadesController()

@@ -119,6 +119,8 @@ model ContatoCandidatos {
   infosContato      String            @map("infos_contato")
   statusAtendimento Int               @map("status_atendimento")
   comentProxContato String?           @map("comentarios_proximo_contato")
+  matricula         Matriculas?       @relation(fields: [idMatricula], references: [id])
+  idMatricula       Int?              @map("id_matricula")
   CursosInteresse   CursosInteresse[]
 
   // @@id([idContato, idCandidato, idFuncionario])
@@ -251,6 +253,7 @@ model Matriculas {
   idFuncResponsavel      String       @map("id_funcionario_responsavel")
 
   @@map("matriculas")
+  ContatoCandidatos ContatoCandidatos[]
 }
 
 model RedesSociais {
