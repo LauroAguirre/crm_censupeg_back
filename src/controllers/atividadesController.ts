@@ -1,8 +1,9 @@
 import { Request, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { Matriculas, PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
 import { JWTHeader } from '../providers/JWTHeader'
 import { novoAgendamento } from './agendamentosController'
+import { connect } from 'http2'
 
 const prisma = new PrismaClient()
 const CONTATO_CANDIDATO = 1
@@ -152,7 +153,8 @@ class AtividadesController {
 
   async contatoCandidato (req: Request, res: Response): Promise<Response> {
     try {
-      const { idCandidato, dtContato, edital, cursosInteresse, proxContato, infosContato, statusAtendimento, comentProxContato, idAgendamento } = req.body
+      const { idCandidato, dtContato, edital, cursosInteresse, proxContato, infosContato, statusAtendimento,
+        dtMatricula, idCursoMatricula, comentProxContato, idAgendamento } = req.body
 
       const authHeader = req.headers.authorization
       const [, token] = authHeader.split(' ')
@@ -236,6 +238,8 @@ class AtividadesController {
             }
           })
         }
+
+        if(dtMatricula) await registrarMatricula({idCandidato, dtMatricula, idCurso: idCursoMatricula, idFuncionario} )
 
         if(proxContato){
           await novoAgendamento({
@@ -369,6 +373,60 @@ class AtividadesController {
       return res.status(500).json(error)
     }
   }
+}
+
+interface DadosMatricula{
+  idCandidato: string,
+  idCurso: number,
+  dtMatricula: Date,
+  idFuncionario: string
+}
+export const registrarMatricula = async (matricula:DadosMatricula):Promise<Matriculas> => {
+  const {idCandidato, idCurso, dtMatricula, idFuncionario} = matricula
+  try {
+    const novaMatricula = await prisma.matriculas.create({
+      data:{
+        dtMatricula,
+        candidato: {
+          connect:{
+            id: idCandidato
+          }
+        },
+        curso: {
+          connect: {
+            id: idCurso
+          }
+        },
+        funcionarioResponsavel: {
+          connect: {
+            id: idFuncionario
+          }
+        }
+      },
+      include:{
+        candidato: true,
+        curso: true,
+      }
+    })
+
+    const perfilCandidato = await prisma.candidatos.findUnique({where: {id: idCandidato}})
+    const curso = await prisma.cursos.findUnique({where: {id: idCurso}})
+
+    await prisma.candidatos.update({
+      where: {
+        id: idCandidato
+      },
+      data: {
+        alunoCensupeg: true,
+        cursoAtual: perfilCandidato.cursoAtual.length > 0 ? `${perfilCandidato.cursoAtual}, ${curso.nome}` : curso.nome
+      }
+    })
+
+    return novaMatricula
+  } catch (error) {
+    throw new Error(error)
+  }
+
 }
 
 export default new AtividadesController()

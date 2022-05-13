@@ -66,43 +66,44 @@ model CampanhasUnidades {
 }
 
 model Candidatos {
-  id                      String            @id @default(uuid()) @map("id_candidato")
-  dtCadastro              DateTime          @default(now()) @map("dt_cadastro")
+  id                      String              @id @default(uuid()) @map("id_candidato")
+  dtCadastro              DateTime            @default(now()) @map("dt_cadastro")
   nome                    String
   email                   String?
   fone1                   String
   fone2                   String?
   cpf                     String?
-  dtNascimento            DateTime?         @map("dt_nascimento")
+  dtNascimento            DateTime?           @map("dt_nascimento")
   escolaridade            Int?
   formacao                String?
-  cursoAtual              String?           @map("curso_atual")
+  cursoAtual              String?             @map("curso_atual")
   cidade                  String?
   uf                      String?
-  alunoCensupeg           Boolean           @default(false) @map("aluno_censupeg")
-  outrosCursosInteresse   String?           @map("outros_cursos_interesse")
-  outrasInfos             String?           @map("outras_infos")
-  dtUltContato            DateTime?         @map("dt_ultimo_contato")
+  alunoCensupeg           Boolean             @default(false) @map("aluno_censupeg")
+  outrosCursosInteresse   String?             @map("outros_cursos_interesse")
+  outrasInfos             String?             @map("outras_infos")
+  dtUltContato            DateTime?           @map("dt_ultimo_contato")
   sexo                    String?
-  horarioMatutino         Boolean           @default(false) @map("horario_matutino")
-  horarioVespertino       Boolean           @default(false) @map("horario_vespertino")
-  horarioNoturno          Boolean           @default(false) @map("horario_noturno")
-  interessePos            Boolean           @default(false) @map("interesse_pos")
-  interesseGraduacao      Boolean           @default(false) @map("interesse_graduacao")
-  interesseMestrado       Boolean           @default(false) @map("interesse_mestrado")
-  interessePresencial     Boolean           @default(false) @map("interesse_presencial")
-  interesseEad            Boolean           @default(false) @map("interesse_ead")
-  interesseHibrido        Boolean           @default(false) @map("interesse_hibrido")
-  funcionarioCad          Funcionarios?     @relation("funcionarioCadCandidato", fields: [idFuncionarioCad], references: [id])
-  idFuncionarioCad        String?           @map("id_funcionario_cadastro")
-  funcionarioUltContato   Funcionarios?     @relation("funcionarioUltContatoCandidato", fields: [idFuncionarioUltContato], references: [id])
-  idFuncionarioUltContato String?           @map("id_funcionario_ultimo_contato")
+  horarioMatutino         Boolean             @default(false) @map("horario_matutino")
+  horarioVespertino       Boolean             @default(false) @map("horario_vespertino")
+  horarioNoturno          Boolean             @default(false) @map("horario_noturno")
+  interessePos            Boolean             @default(false) @map("interesse_pos")
+  interesseGraduacao      Boolean             @default(false) @map("interesse_graduacao")
+  interesseMestrado       Boolean             @default(false) @map("interesse_mestrado")
+  interessePresencial     Boolean             @default(false) @map("interesse_presencial")
+  interesseEad            Boolean             @default(false) @map("interesse_ead")
+  interesseHibrido        Boolean             @default(false) @map("interesse_hibrido")
+  funcionarioCad          Funcionarios?       @relation("funcionarioCadCandidato", fields: [idFuncionarioCad], references: [id])
+  idFuncionarioCad        String?             @map("id_funcionario_cadastro")
+  funcionarioUltContato   Funcionarios?       @relation("funcionarioUltContatoCandidato", fields: [idFuncionarioUltContato], references: [id])
+  idFuncionarioUltContato String?             @map("id_funcionario_ultimo_contato")
   cursosInteresse         CursosInteresse[]
-  Campanha                Campanhas?        @relation(fields: [idCampanha], references: [id])
-  idCampanha              String?           @map("id_campanha")
+  Campanha                Campanhas?          @relation(fields: [idCampanha], references: [id])
+  idCampanha              String?             @map("id_campanha")
+  ContatoCandidatos       ContatoCandidatos[]
+  Agendamentos            Agendamentos[]
+  Matriculas              Matriculas[]
 
-  ContatoCandidatos ContatoCandidatos[]
-  Agendamentos      Agendamentos[]
   @@map("candidatos")
 }
 
@@ -141,16 +142,17 @@ model ContatoEmpresas {
 }
 
 model Cursos {
-  id              Int      @id @default(autoincrement()) @map("id_curso")
-  dtCadastro      DateTime @default(now()) @map("dt_cadastro")
-  nome            String
-  modalidade      Int
-  tipo            Int
-  link            String?
-  infosAdicionais String?  @map("ifnos_adicionais")
-
+  id               Int                @id @default(autoincrement()) @map("id_curso")
+  dtCadastro       DateTime           @default(now()) @map("dt_cadastro")
+  nome             String
+  modalidade       Int
+  tipo             Int
+  link             String?
+  infosAdicionais  String?            @map("ifnos_adicionais")
   CursosEmUnidades CursosEmUnidades[]
   CursosInteresse  CursosInteresse[]
+  Matriculas       Matriculas[]
+
   @@map("cursos")
 }
 
@@ -233,8 +235,22 @@ model Funcionarios {
   ContatoCandidatos     ContatoCandidatos[]
   Atividades            Atividades[]
   Agendamentos          Agendamentos[]
+  Matriculas            Matriculas[]
 
   @@map("funcionarios")
+}
+
+model Matriculas {
+  id                     Int          @id @default(autoincrement()) @map("id_matricula")
+  candidato              Candidatos   @relation(fields: [idCandidato], references: [id])
+  idCandidato            String       @map("id_candidato")
+  dtMatricula            DateTime     @map("data_matricula")
+  curso                  Cursos       @relation(fields: [idCurso], references: [id])
+  idCurso                Int          @map("id_curso")
+  funcionarioResponsavel Funcionarios @relation(fields: [idFuncResponsavel], references: [id])
+  idFuncResponsavel      String       @map("id_funcionario_responsavel")
+
+  @@map("matriculas")
 }
 
 model RedesSociais {
