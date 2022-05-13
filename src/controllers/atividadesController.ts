@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Matriculas, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
 import { JWTHeader } from '../providers/JWTHeader'
 import { novoAgendamento } from './agendamentosController'
